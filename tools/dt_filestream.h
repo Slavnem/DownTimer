@@ -104,7 +104,6 @@ extern dtfse_code dtfsf_fileopener(mydtfsptr argMydtfsptr)
     // kontrol edilecek, boş değilse hata döndürsün
     if(!isNull(argMydtfsptr->file_addr))
         return DTFS_ERR_NOTNULL; // dosya işaretçisi boş değil
-
     // dosya yolu kontrolü
     else if(isNull(argMydtfsptr->file_path))
         return DTFS_ERR_PATHNULL; // dosya yolu boş
