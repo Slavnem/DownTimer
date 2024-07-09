@@ -15,14 +15,18 @@ Kilitle | Lock: -lo
 </pre>
 
 ## Windows Destek | Windows Support
-`Windows x86 [32 Bit]`
-`Windows x64 [64 Bit]`
+<pre>
+Windows x86 [32 Bit]
+Windows x64 [64 Bit]
+</pre>
 
 ## Linux Masaüstü Destek | Linux Desktop Support
-`GNOME [Çok Az Test Edildi | Very Little Tested]`
-`KDE [Test Edilmedi | Not Tested]`
-`XFCE [Test Edilmedi | Not Tested]`
-`MATE [Test Edilmedi | Not Tested]`
+<pre>
+GNOME [Çok Az Test Edildi | Very Little Tested]
+KDE [Test Edilmedi | Not Tested]
+XFCE [Test Edilmedi | Not Tested]
+MATE [Test Edilmedi | Not Tested]
+</pre>
 
 <!-- Açıklama Türkçe -->
 # 📦 🛠️ 📝 Özellikler
