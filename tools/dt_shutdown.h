@@ -164,14 +164,10 @@ extern dtshe_code dtshf_timer(mydtshptr_s argMydtshptr)
             __SHUTDOWN_OFF__, // sistemi kapat
             timeConverterForOs(argMydtshptr->time) // süre (dakika)
         );
-
-        // zaman oluşturmaya sıçrasın
-        goto timecreate;
     }
-
     // eşleştiği komuta göre ayarla
     // sistemi kapatma
-    if(strcmp(argMydtshptr->command, __SHUTDOWN_COMM_OFF__) == 0)
+    else if(strcmp(argMydtshptr->command, __SHUTDOWN_COMM_OFF__) == 0)
     {
         snprintf(
             buffer,
@@ -252,57 +248,52 @@ extern dtshe_code dtshf_timer(mydtshptr_s argMydtshptr)
     else
         return DTSH_ERR_UNKNOWNCOMM;
 
-    // zaman oluşturmaya sıçrasın
-    goto timecreate;
+    system(buffer); // komutu çalıştır
 
-    // zamanı çalıştırıp kayıt dosyasına kaydetme
-    timecreate:
-        system(buffer); // komutu çalıştır
+    // yeni bir dosya işlem yapısı oluştursun
+    mydtfsptr logfileptr = NULL;
 
-        // yeni bir dosya işlem yapısı oluştursun
-        mydtfsptr logfileptr = NULL;
-
-        // bellek alanı ayırsın, eğer başarısız ise
-        // zamanlayıcı zaten çalıştığı için
-        // başarı kodu döndürsün
-        if(dtaf_mallocation(logfileptr, sizeof(mydtfs)) == NULL)
-            return DTSH_MSG_TIMERCREATED;
-
-        // dosya ayarlamalarını yapsın
-        logfileptr->file_path = __DTFS_LOG__; // kayıt dosyası
-        logfileptr->open_type = __DTFS_OTYPE_ADD__; // sonuna veri ekle
-        
-        // dosya açma kontrolü
-        switch(dtfsf_fileopener(logfileptr))
-        {
-            // başarıyla açıldı, sorun yok
-            case DTFS_MSG_OPENED:
-                break;
-            // başarısız
-            default:
-                // bellek adresini temizlesin
-                dtaf_memfree(logfileptr);
-
-                // komut çalıştırma başarı kodunu döndürsün
-                return DTSH_MSG_TIMERCREATED;
-        }
-
-        // dosyaya veriyi eklesin
-        fprintf(
-            logfileptr->file_addr, // dosya işaretçisi
-            "%s %s | %s %zu\n", // eklenecek metin
-            "command::", argMydtshptr->command, // komut metini
-            "time::", argMydtshptr->time // süre metini
-        );
-
-        // dosyayı kapatsın
-        dtfsf_filecloser(logfileptr);
-
-        // bellekten temizlesin
-        dtaf_memfree(logfileptr);
-
-        // başarı kodunu döndür
+    // bellek alanı ayırsın, eğer başarısız ise
+    // zamanlayıcı zaten çalıştığı için
+    // başarı kodu döndürsün
+    if(dtaf_mallocation(logfileptr, sizeof(mydtfs)) == NULL)
         return DTSH_MSG_TIMERCREATED;
+
+    // dosya ayarlamalarını yapsın
+    logfileptr->file_path = __DTFS_LOG__; // kayıt dosyası
+    logfileptr->open_type = __DTFS_OTYPE_ADD__; // sonuna veri ekle
+    
+    // dosya açma kontrolü
+    switch(dtfsf_fileopener(logfileptr))
+    {
+        // başarıyla açıldı, sorun yok
+        case DTFS_MSG_OPENED:
+            break;
+        // başarısız
+        default:
+            // bellek adresini temizlesin
+            dtaf_memfree(logfileptr);
+
+            // komut çalıştırma başarı kodunu döndürsün
+            return DTSH_MSG_TIMERCREATED;
+    }
+
+    // dosyaya veriyi eklesin
+    fprintf(
+        logfileptr->file_addr, // dosya işaretçisi
+        "%s %s | %s %zu\n", // eklenecek metin
+        "command::", argMydtshptr->command, // komut metini
+        "time::", argMydtshptr->time // süre metini
+    );
+
+    // dosyayı kapatsın
+    dtfsf_filecloser(logfileptr);
+
+    // bellekten temizlesin
+    dtaf_memfree(logfileptr);
+
+    // başarı kodunu döndür
+    return DTSH_MSG_TIMERCREATED;
 }
 
 #endif

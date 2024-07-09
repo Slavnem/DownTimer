@@ -5,6 +5,14 @@
 <pre>Windows x86/x64 -> GCC</pre>
 <pre>Linux -> CMake GCC</pre>
 
+<!-- Bilgilendirme -->
+<pre>
+!!! ALERT !!!
+Linux da Yönetici Olmanız Gerekebilir
+You May Need To Be An Administrator On Linux
+Вам может понадобиться быть администратором в Linux
+</pre>
+
 <!-- Komutlar -->
 <pre>
 Kapat | Off: -of
