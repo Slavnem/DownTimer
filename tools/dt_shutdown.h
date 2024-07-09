@@ -274,8 +274,8 @@ extern dtshe_code dtshf_timer(mydtshptr_s argMydtshptr)
     fprintf(
         logfile.file_addr, // dosya işaretçisi
         "%s %s | %s %zu\n", // eklenecek metin
-        "command -> ", argMydtshptr->command, // komut metini
-        "minute -> ", argMydtshptr->time // süre metini
+        "command -->", argMydtshptr->command, // komut metini
+        "minute -->", argMydtshptr->time // süre metini
     );
 
     // dosyayı kapatsın
