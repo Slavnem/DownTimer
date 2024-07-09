@@ -16,8 +16,8 @@ Kilitle | Lock: -lo
 
 ## Windows Destek | Windows Support
 <pre>
-Windows x86 [32 Bit]
-Windows x64 [64 Bit]
+Windows x86 [32 Bit] [Test Edilmedi | Not Tested]
+Windows x64 [64 Bit] [Test Edilmedi | Not Tested]
 </pre>
 
 ## Linux Masaüstü Destek | Linux Desktop Support
