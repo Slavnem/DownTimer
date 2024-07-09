@@ -1,0 +1,5 @@
+# "linux-build" klasöründeki CMakeLists.txt dosyası görünsün
+!linux-build/CMakeLists.txt
+
+# "windows-build" klasörünü tamamen gizle
+windows-build/
