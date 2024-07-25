@@ -2,30 +2,26 @@
 # 🚀 Down Timer
 
 <!-- İşletim Sistemleri -->
-<pre>Windows x86/x64 -> GCC</pre>
 <pre>Linux -> CMake GCC</pre>
 
 <!-- Bilgilendirme -->
 <pre>
-!!! ALERT !!!
-Linux da Yönetici Olmanız Gerekebilir
-You May Need To Be An Administrator On Linux
-Вам может понадобиться быть администратором в Linux
+! UYARI !
+TR: Linux da "sudo" yönetici olmanız gerekebilir ve bu durumda
+yönetici olmadığınızda yetki izni olmazsa eğer, yapılan işlemler dosyaya kaydedilemeyebilir
+
+! ALERT !
+EN: In Linux you may need to be a “sudo” administrator and in this case
+when you are not an administrator, if you do not have authorization permission, the operations performed may not be saved to the file
 </pre>
 
 <!-- Komutlar -->
 <pre>
-Kapat | Off: -of
-Yeniden Başlat | Restart: -re
-Uyku | Sleep: -sl
+Kapat | Off: -of "sudo?"
+Yeniden Başlat | Restart: -re "sudo?"
+Uyku | Sleep: -sl "sudo?"
 Kilitle | Lock: -lo
-İptal Et | Cancel: -ca
-</pre>
-
-## Windows Destek | Windows Support
-<pre>
-Windows x86 [32 Bit] [Test Edilmedi | Not Tested]
-Windows x64 [64 Bit] [Test Edilmedi | Not Tested]
+İptal Et | Cancel: -ca "sudo?"
 </pre>
 
 ## Linux Masaüstü Destek | Linux Desktop Support
@@ -47,9 +43,3 @@ MATE [Test Edilmedi | Not Tested]
 + Run with commands that can be entered from the console
 + In-App Run
 + System Creating a Timer Using Own Timer System
-
-<!-- Комментарий Русский -->
-# 📦 🛠️ 📝 Особенности
-+ Запуск с командами, которые можно ввести с консоли
-+ Запуск в приложении
-+ Система Создание таймера Использование собственной системы таймера

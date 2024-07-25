@@ -1,5 +1,0 @@
-/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/linux-build/build/CMakeFiles/DT_ToolsHeaders.dir
-/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/linux-build/build/CMakeFiles/DT_InitHeader.dir
-/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/linux-build/build/CMakeFiles/DownTimer.dir
-/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/linux-build/build/CMakeFiles/edit_cache.dir
-/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/linux-build/build/CMakeFiles/rebuild_cache.dir

@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/DownTimer.dir/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/dt_kernel.c.o -o DownTimer 
