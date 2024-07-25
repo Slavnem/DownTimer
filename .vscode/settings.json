@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.embeddedhtml": "html",
-        "typedefine.h": "c",
-        "compare": "cpp",
-        "shutdown.h": "c",
-        "stdlib.h": "c"
-    }
-}
