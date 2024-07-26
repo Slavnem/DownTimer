@@ -13,6 +13,36 @@
 #include "../lib/Shutdown.h"
 #include "../lib/FileSteam.h"
 
+/* İşletim Sistemi Zamanlayıcısı
+    İşletim sistemine göre zamanlayıcı miktarları farklı olabiliryor.
+    Windows da saniye cinsinden süre geçerliyken Linux de dakika
+    cinsinden kullanılıyor bu yüzden ikisinde de aynı süreyi kullanamayız,
+    bunun içinde uyumluluk sağlayan fonksiyon ile işletim sistemine göre
+    özel olarak hesaplamakta
+*/
+static intmax_s static_shutdown_timer_calculate(intmax_s time)
+{
+    // Eğer geçersiz süre iseoşsa
+    if(time < 1) return 0;
+
+    // Windows için
+    #if _WIN32 || _WIN64
+        return (intmax_s)(time * 60);
+    // Linux için
+    #elif __linux__
+        return (intmax_s)(time);
+    #endif
+
+    // bilinmeyen
+    return 0;
+}
+
+extern intmax_s shutdown_timer_calculate(intmax_s time)
+{
+    // yerel fonksiyonu çalıştır
+    return static_shutdown_timer_calculate(time);
+}
+
 /* Zamanlayıcı
     Hazırlanmış verileri kullanarak yeni bir zamanlayıcı oluşturmak
     fakat değerleri ve komutu kontrol ettikten sonra ancak işlem
@@ -23,7 +53,7 @@
     eğer kod girilmeden sadece sayı girilmişse, biz bunu bilgisayar kapatma
     olarak varsayacağız ve süreyi kullanarak işlem yapacağız
 */
-static const ESHCODE static_shutdown_timer(string_s command, uint32_s time, boolean console)
+static const ESHCODE static_shutdown_timer(string_s command, intmax_s time, boolean console)
 {
     // geçerli komut ve zaman boşsa
     if(ISNULL(command) && time < 1)
@@ -40,50 +70,26 @@ static const ESHCODE static_shutdown_timer(string_s command, uint32_s time, bool
         printf("\n%s\n", "* Zamanlayici Icin Girdiginiz Degerler Gecerli *");
     #endif
 
-    // geçici olarak kapatma komutu tutucu
-    char buffer[256];
+    intmax_s calcTime = shutdown_timer_calculate(time); // işletim sistemine göre süre
+    char buffer[256]; // geçici olarak kapatma komutu tutucu
 
     // sistemi kapat
     if((ISNULL(command) && time > 0) || strcmp(command, __SHUTDOWN_COMM_OFF__) == 0)
-    {
-        // geçici metine kaydet
-        snprintf(buffer,
-            SAFESIZESTR(buffer), // güvenli şekilde desteklediği boyut
-            "%s %u", __SHUTDOWN_OFF__, TIMEOS(time) // sistemi kapat
-        );
-    }
-    // yeniden başlatma
+        // sistemi kapat
+        snprintf(buffer, SAFESIZESTR(buffer), "%s " __INTMAX_FORMAT__, __SHUTDOWN_OFF__, calcTime);
+    // yeniden başlat
     else if(strcmp(command, __SHUTDOWN_COMM_RESTART__) == 0)
-    {
-        snprintf(buffer,
-            SAFESIZESTR(buffer),
-            "%s %u", __SHUTDOWN_RESTART__, TIMEOS(time) // yeniden başlatma
-        );
-    }
+        // yeniden başlat
+        snprintf(buffer, SAFESIZESTR(buffer), "%s " __INTMAX_FORMAT__, __SHUTDOWN_RESTART__, calcTime);
     // uyku
     else if(strcmp(command, __SHUTDOWN_COMM_SLEEP__) == 0)
-    {
-        snprintf(buffer,
-            SAFESIZESTR(buffer),
-            "%s", __SHUTDOWN_SLEEP__ // uyku modu
-        );
-    }
-    // kitleme
+        snprintf(buffer, SAFESIZESTR(buffer), "%s", __SHUTDOWN_SLEEP__);
+    // kilitle
     else if(strcmp(command, __SHUTDOWN_COMM_LOCK__) == 0)
-    {
-        snprintf(buffer,
-            SAFESIZESTR(buffer),
-            "%s", __SHUTDOWN_LOCK__ // kilitleme
-        );
-    }
-    // iptal etme
+        snprintf(buffer, SAFESIZESTR(buffer), "%s", __SHUTDOWN_LOCK__);
+    // iptal et
     else if(strcmp(command, __SHUTDOWN_COMM_CANCEL__) == 0)
-    {
-        snprintf(buffer,
-            SAFESIZESTR(buffer),
-            "%s", __SHUTDOWN_CANCEL__ // iptal etme
-        );
-    }
+        snprintf(buffer, SAFESIZESTR(buffer), "%s", __SHUTDOWN_CANCEL__);
     else
     {
         #ifdef __DEBUG_SHUTDOWN__
@@ -141,7 +147,7 @@ static const ESHCODE static_shutdown_timer(string_s command, uint32_s time, bool
             CLOCKHOUR(MINUTETOHOUR(time)), "Hr", // saat
             CLOCKMINUTE(time), "Min", // dakika
         "os", __OS__, // işletim sistemi
-        "env", __OS_DESKTOP_ENV__ // masaüstü ortamı
+        "env", myDesktopEnv() // masaüstü ortamı
     );
 
     // dosyaya veri yazdırmak
@@ -158,7 +164,7 @@ static const ESHCODE static_shutdown_timer(string_s command, uint32_s time, bool
     return ESH_CODE_MSG_TIMERRUNNED;
 }
 
-extern ESHCODE shutdown_timer(string_s command, uint32_s time, boolean console)
+extern const ESHCODE shutdown_timer(string_s command, intmax_s time, boolean console)
 {
     // yerel fonksiyonu kullan
     return static_shutdown_timer(command, time, console);

@@ -10,9 +10,9 @@
 #include "TypeDefine.h"
 
 // Fonksiyon Prototipleri
-extern vptr mem_alloc(vptr, uint32_s);
-extern vptr mem_realloc(vptr, uint32_s);
-extern vptr mem_calloc(vptr, uint32_s, uint32_s);
+extern vptr mem_alloc(vptr, uintmax_s);
+extern vptr mem_realloc(vptr, uintmax_s);
+extern vptr mem_calloc(vptr, uintmax_s, uintmax_s);
 extern vptr mem_free(vptr);
 
 #endif

@@ -30,7 +30,7 @@ typedef enum
 } EINITCODE;
 
 extern void init_message(string_s message);
-extern const EINITCODE init_console(uint8_s argc, string_s argvptr[]);
+extern const EINITCODE init_console(int argc, string_s argvptr[]);
 extern const EINITCODE init_screen(void);
 
 #endif

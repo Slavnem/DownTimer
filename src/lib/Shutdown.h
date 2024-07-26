@@ -12,28 +12,19 @@
 
 // İşletim sistemine göre zamanlı kapatıcı desteği
 // Windows 32 bit ve 64 bit desteği
-#if defined(_WIN32) || defined(_WIN64)
-    #define __SHUTDOWN_OFF__ "shutdown /a && shutdown /s /t"
-    #define __SHUTDOWN_RESTART__ "shtudown /a && shutdown /r /t"
-    #define __SHUTDOWN_SLEEP__ "shutdown /a && rundll32.exe powrprof.dll,SetSuspendState 0,1,0"
-    #define __SHUTDOWN_LOCK__ "shutdown /a && rundll32.exe user32.dll,LockWorkStation"
+#if _WIN32 || _WIN64
+    #define __SHUTDOWN_OFF__ "shutdown /a & shutdown /s /t"
+    #define __SHUTDOWN_RESTART__ "shtudown /a & shutdown /r /t"
+    #define __SHUTDOWN_SLEEP__ "shutdown /a & rundll32.exe powrprof.dll,SetSuspendState 0,1,0"
+    #define __SHUTDOWN_LOCK__ "shutdown /a & rundll32.exe user32.dll,LockWorkStation"
     #define __SHUTDOWN_CANCEL__ "shutdown /a"
-
-    // İşletim Sistemine Göre Zaman Hesaplayıcı
-    #define TIMEOS(time) (time < 1 ? 0 : ((uint16_s)time * 60))
 // Linux
-#elif defined(__linux__)
+#elif __linux__
     #define __SHUTDOWN_OFF__ "shutdown -h"
     #define __SHUTDOWN_RESTART__ "shutdown -r"
     #define __SHUTDOWN_SLEEP__ "systemctl suspend"
     #define __SHUTDOWN_LOCK__ "xdg-screensaver lock"
     #define __SHUTDOWN_CANCEL__ "shutdown -c"
-
-    // Zaman Hesaplayıcı
-    #define TIMEOS(time) (time < 1 ? 0 : (uint32_s)time)
-// Bilinmeyen İşletim Sistemi
-#else
-    #error "Only Linux, Windows x86 And x64's Supporting. Unsupported OS Error!"
 #endif
 
 // Konsol/Terminalden Hangi İşlemi Yapacağını Sağlayan Komutlar
@@ -91,6 +82,7 @@ typedef enum
 } ESHCODE;
 
 // Fonksiyon Prototipleri
-extern const ESHCODE shutdown_timer(string_s command, uint32_s time, boolean console);
+extern intmax_s shutdown_timer_calculate(intmax_s time);
+extern const ESHCODE shutdown_timer(string_s command, intmax_s time, boolean console);
 
 #endif

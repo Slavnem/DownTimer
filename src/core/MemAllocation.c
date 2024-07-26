@@ -23,7 +23,7 @@
     alan ayrılmışsa işaretçinin adresini, değilse de
     NULL yani boş döndürüyoruz
 */
-extern vptr mem_alloc(vptr addrptr, uint32_s maxsize)
+extern vptr mem_alloc(vptr addrptr, uintmax_s maxsize)
 {
     // bellek alanı boş değilse eğer
     // yeni bellek alanı ayrılamaz
@@ -60,7 +60,7 @@ extern vptr mem_alloc(vptr addrptr, uint32_s maxsize)
 	Bellek alanı kullanılıyorsa eğer, belirlenen boyuta göre yeniden boyutlandırılır.
 	Boyutlandırma başarılı ise işaretçinin adresi döner, değilse boş (NULL) döner
 */
-extern vptr mem_realloc(vptr addrptr, uint32_s resize)
+extern vptr mem_realloc(vptr addrptr, uintmax_s resize)
 {
     // bellek adresi tahsis edilmemiş yani boş (NULL) ise
 	// tekrardan bellek alanı tahsisi yapılamaz
@@ -128,7 +128,7 @@ extern vptr mem_realloc(vptr addrptr, uint32_s resize)
 	ve bu bellek alanındaki değerleri sıfırlar. Bellek alanı boş değilse adresini
 	döndürür ama eğer boş ise NULL döndürür
 */
-extern vptr mem_calloc(vptr addrptr, uint32_s arrsize, uint32_s varsize)
+extern vptr mem_calloc(vptr addrptr, uintmax_s arrsize, uintmax_s varsize)
 {
     // bellek adresi boş değilse calloc kullanılamaz
 	// çünkü calloc yeni bir bellek alanı açar fakat diziler için daha uygundur

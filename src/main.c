@@ -8,7 +8,7 @@
 static EINITCODE __initKernelCode = EINIT_STAT_FREE;
 
 // main
-int main(int argc, const char* const argv[])
+int main(int argc, string_s argv[])
 {
     // argümanlar ile işlem yapmasını sağlamak
     __initKernelCode = init_console(argc, argv);

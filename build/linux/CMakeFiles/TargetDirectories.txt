@@ -1,3 +1,0 @@
-/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/build/linux/CMakeFiles/DownTimer.dir
-/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/build/linux/CMakeFiles/edit_cache.dir
-/home/debianx64/Dosyalar/Kodlama/Projeler/downtimer/build/linux/CMakeFiles/rebuild_cache.dir

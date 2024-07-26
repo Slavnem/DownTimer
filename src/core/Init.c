@@ -64,7 +64,7 @@ extern void init_message(string_s message)
     ise gerekli işlem yapılır ve işlem başarılı ise başarı kodu
     döndürür bu sayede komut ekranı çalışmadan işlemler yapılmış olur
 */
-static const EINITCODE static_init_console(uint8_s argc, string_s argvptr[])
+static const EINITCODE static_init_console(int argc, string_s argvptr[])
 {
     // geçici olarak komutu tutacak değişken
     string_a strCommand = NULL;
@@ -137,7 +137,7 @@ static const EINITCODE static_init_console(uint8_s argc, string_s argvptr[])
     return EINIT_ERR_TIMER;
 }
 
-extern const EINITCODE init_console(uint8_s argc, string_s argvptr[])
+extern const EINITCODE init_console(int argc, string_s argvptr[])
 {
     // yerel kodu çalıştır
     return static_init_console(argc, argvptr);

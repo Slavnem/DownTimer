@@ -14,8 +14,8 @@
 // Dosya Türü Tanımlaması
 typedef FILE file, *fileptr; // korumasız
 typedef const file file_s; // basit korumalı
-typedef const fileptr fileptr_a; // bellek adresinden değiştirilebilir
-typedef const fileptr_a fileptr_s; // hiçbir şekilde değiştirilemez
+typedef const file* fileptr_a; // bellek adresinden değiştirilebilir
+typedef const file* const fileptr_s; // hiçbir şekilde değiştirilemez
 
 // Dosya Açma Türleri
 typedef enum
@@ -82,8 +82,8 @@ typedef struct myfile
 
 typedef MyFile *MyFilePtr; // işaretçi
 typedef const MyFile MyFile_s; // basit korumalı
-typedef const MyFilePtr MyFilePtr_a; // bellek adresinden değiştirilebilir
-typedef const MyFilePtr_a MyFilePtr_s; // hiçbir şekilde değiştirilemez
+typedef const MyFile* MyFilePtr_a; // bellek adresinden değiştirilebilir
+typedef const MyFile* const MyFilePtr_s; // hiçbir şekilde değiştirilemez
 
 // Fonksiyon Prototipleri
 extern const EFSCODE file_opener(MyFilePtr myfileptr, string_s filepath, EFSOTYPE opentype);
