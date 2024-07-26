@@ -13,7 +13,11 @@
 static string_s static_myDesktopEnv(void)
 {
     // Windows ise "Windows Shell" kullanıldığı varsayılacak
-    #if defined(_WIN32) || defined(_WIN64)
+    #if _WIN32 || _WIN64
+    	#if __DEBUG_OS_SUPPORT__
+    		printf("\n%s\n", "* Windows Isletim Sistemi Tespit Edildi *");
+    	#endif
+    	
         return "WINDOWS SHELL";
     #endif
 
@@ -23,7 +27,7 @@ static string_s static_myDesktopEnv(void)
     // boş değilse eğer, arayüz bulundu
     if(!ISNULL(desktop_env))
     {
-        #ifdef __DEBUG_SHUTDOWN__
+        #ifdef __DEBUG_OS_SUPPORT__
             printf("\n%s\n", "* Linux Masaustu Arayuzu Bulundu *");
         #endif
 
@@ -34,7 +38,7 @@ static string_s static_myDesktopEnv(void)
     desktop_env = getenv("DESKTOP_SESSION");
 
     // boş değilse arayüz bulundu, aksi halde boş
-    #ifdef __DEBUG_SHUTDOWN__
+    #ifdef __DEBUG_OS_SUPPORT__
         if(ISNULL(desktop_env))
             printf("\n%s\n", "* Linux Masaustu Arayuzu Bulunamadi *");
         else

@@ -3,6 +3,9 @@
 #ifndef DT_OS_SUPPORT_H
 #define DT_OS_SUPPORT_H
 
+// İşletim Sistemi Desteği Hata Ayıklayıcısı Belirteci
+// #define __DEBUG_OS_SUPPORT__
+
 // Kütüphaneler
 #include <stdio.h>
 #include <stdlib.h>
