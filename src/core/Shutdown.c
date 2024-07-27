@@ -78,7 +78,7 @@ static boolean_s static_shutdown_execute(string_s command)
     #ifdef __DEBUG_MSG_SHUTDOWN__
         DEBUG_PRINT(!result ?
             "Komut Basariyla Calisti" :
-            "Komut Basarisiz Oldu"
+            "Komut Calistirilamadi"
         );
     #endif
 
