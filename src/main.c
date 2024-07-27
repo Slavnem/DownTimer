@@ -1,11 +1,16 @@
 // Slavnem @2024-07-21
 // Ana Dosya
 
+// Geçersiz İşletim Sistemi İçin Kontrol
+#ifndef __linux__
+    #error "Only Linux x86_64 Supporting. Unsupported OS Error!"
+#endif
+
 // Kütüphaneler
 #include "lib/Init.h"
 
 // çalışma durumu başlangıç (boş)
-static EINITCODE __initKernelCode = EINIT_STAT_FREE;
+static einitcode __initKernelCode = EINIT_STAT_FREE;
 
 // main
 int main(int argc, string_s argv[])
@@ -23,8 +28,6 @@ int main(int argc, string_s argv[])
         // başarıyla çalıştı
         case EINIT_MSG_CONSOLEOK:
             return 0; // başarılı, program sonlansın
-        // diğer
-        default: break;
     }
 
     // ekranı çalıştırsın
@@ -44,8 +47,6 @@ int main(int argc, string_s argv[])
         // başarıyla çalıştı
         case EINIT_MSG_SCREENOK:
             return 0; // başarılı, program sonlansın
-        // diğer
-        default: break;
     }
 
     // program sonu

@@ -14,7 +14,7 @@
     ve dosya başarıyla açılırsa değerler kaydedilecek ve başarı
     kodu döndürülecek, aksi halde hata kodu döndürülecek
 */
-static const EFSCODE static_file_opener(MyFilePtr myfileptr, string_s filepath, EFSOTYPE opentype)
+static efscode_s static_file_opener(MyFilePtr myfileptr, string_s filepath, efsotype_s opentype)
 {
     // eğer gelen yapı boşsa, bellek alanı ayırsın
     if(ISNULL(myfileptr))
@@ -25,12 +25,10 @@ static const EFSCODE static_file_opener(MyFilePtr myfileptr, string_s filepath, 
         // bellek alanı tahsis edilmesine rağmen boşsa
         if(ISNULL(myfileptr))
         {
-            #ifdef __DEBUG_FILESTREAM__
-                printf("\n%s\n", "* Bos Dosya Degiskeni Icin Bellekten Alan Tahsis Edilemedi, Bellek Musait Degil *");
+            #ifdef __DEBUG_MSG_FILESTREAM__
+                DEBUG_PRINT("Bos Dosya Degiskeni Icin Bellekten Alan Tahsis Edilemedi, Bellek Musait Degil");
             #endif
-
-            // yeni obje oluşturulamama hatası
-            return EFS_CODE_ERR_NEWOBJECT;
+            return EFS_CODE_ERR_NEWOBJECT; // yeni obje oluşturulamama hatası
         }
 
         // değerleri ayarla
@@ -39,29 +37,25 @@ static const EFSCODE static_file_opener(MyFilePtr myfileptr, string_s filepath, 
         myfileptr->otype = opentype;
         
         // bellek alan ayırımı başarılı
-        #ifdef __DEBUG_FILESTREAM__
-            printf("\n%s\n", "* Bos Dosya Degiskeni Icin Bellek Alani Basariyla Tahsis Edildi *");
-            printf("\n%s\n", "* Baslangic Deger Atamalari Basariyla Yapildi *");
+        #ifdef __DEBUG_MSG_FILESTREAM__
+            DEBUG_PRINT("Bos Dosya Degiskeni Icin Bellek Alani Basariyla Tahsis Edildi");
+            DEBUG_PRINT("Baslangic Deger Atamalari Basariyla Yapildi");
         #endif
     }
     else if(!ISNULL(myfileptr->addr))
     {
-        #ifdef __DEBUG_FILESTREAM__
-            printf("\n%s\n", "* Yeni Bir Dosya Acma Islemi Icin Acik Dosya Olmamasi Zorunludur *");
+        #ifdef __DEBUG_MSG_FILESTREAM__
+            DEBUG_PRINT("Yeni Bir Dosya Acma Islemi Icin Acik Dosya Olmamasi Zorunludur");
         #endif
-
-        // dosya işaretçisi boş değil
-        return EFS_CODE_ERR_NOTNULL;
+        return EFS_CODE_ERR_NOTNULL; // dosya işaretçisi boş değil
     }
     // dosya yolu kontrolü
     else if(ISNULL(filepath))
     {
-        #ifdef __DEBUG_FILESTREAM__
-            printf("\n%s\n", "* Yeni Bir Dosya Acmak Icin Dosya Yolu Olmak Zorundadir *");
+        #ifdef __DEBUG_MSG_FILESTREAM__
+            DEBUG_PRINT("Yeni Bir Dosya Acmak Icin Dosya Yolu Olmak Zorundadir");
         #endif
-
-        // dosya yolu boş
-        return EFS_CODE_ERR_PATHNULL;
+        return EFS_CODE_ERR_PATHNULL; // dosya yolu boş
     }
 
     // geçici olarak dosya açma türünü tutacak olan değişken
@@ -108,11 +102,10 @@ static const EFSCODE static_file_opener(MyFilePtr myfileptr, string_s filepath, 
             break; // sorunsuz
         // dosya açma türü geçersiz
         default:
-            #ifdef __DEBUG_FILESTREAM__
-                printf("\n%s\n", "* Gecersiz Dosya Acma Turu Girdiniz *");
+            #ifdef __DEBUG_MSG_FILESTREAM__
+                DEBUG_PRINT("Gecersiz Dosya Acma Turu Girdiniz");
             #endif
-
-            return EFS_CODE_ERR_INVALIDOPENTYPE;
+            return EFS_CODE_ERR_INVALIDOPENTYPE; // geçersiz dosya açma kodu
     }
 
     // dosyayı açma işlemi
@@ -123,21 +116,20 @@ static const EFSCODE static_file_opener(MyFilePtr myfileptr, string_s filepath, 
 
     // eğer dosya adresi boş ise dosya açılamamıştır
     // aksi halde dosya başarıyla açılmıştır
-    #ifdef __DEBUG_FILESTREAM__
-        if(ISNULL(myfileptr->addr))
-            printf("\n%s\n", "* Dosya Acma Islemi Basarisiz Oldu *");
-        else
-            printf("\n%s\n", "* Dosya Basariyla Acildi *");
+    #ifdef __DEBUG_MSG_FILESTREAM__
+        DEBUG_PRINT(ISNULL(myfileptr->addr) ?
+            "Dosya Acma Islemi Basarisiz Oldu" :
+            "Dosya Basariyla Acildi"
+        );
     #endif
 
     // dosya adresi kontrolüne göre kod dönülecek
     return ISNULL(myfileptr->addr) ?
-        EFS_CODE_ERR_OPENFAIL // dosya açılamadı
-        :
+        EFS_CODE_ERR_OPENFAIL : // dosya açılamadı
         EFS_CODE_MSG_OPENED; // dosya başarıyla açıldı
 }
 
-extern const EFSCODE file_opener(MyFilePtr myfileptr, string_s filepath, EFSOTYPE opentype)
+extern efscode_s file_opener(MyFilePtr myfileptr, string_s filepath, efsotype_s opentype)
 {
     // yerel fonksiyonu kullan
     return static_file_opener(myfileptr, filepath, opentype);
@@ -150,18 +142,16 @@ extern const EFSCODE file_opener(MyFilePtr myfileptr, string_s filepath, EFSOTYP
     durum kodu döndürecektir aksi halde zaten kapatma başarılı olmuştur
     ve bu yüzden başarı kodu döndürür
 */
-static const EFSCODE static_file_closer(MyFilePtr myfileptr)
+static efscode_s static_file_closer(MyFilePtr myfileptr)
 {
     // eğer dosya kapalıysa zaten kapatacak bir şey yoktur
     // gerekli ayarlamalar yapılıp sonlandırılır
     if(ISNULL(myfileptr->addr))
     {
-        #ifdef __DEBUG_FILESTREAM__
-            printf("\n%s\n", "* Dosya Kapatmayi Gerektirecek Aktif Dosya Zaten Yok *");
+        #ifdef __DEBUG_MSG_FILESTREAM__
+            DEBUG_PRINT("Dosya Kapatmayi Gerektirecek Aktif Dosya Zaten Yok");
         #endif
-
-        // dosya boş bildirimi
-        return EFS_CODE_STAT_FREE;
+        return EFS_CODE_STAT_FREE; // dosya boş bildirimi
     }
 
     // dosyayı kapat ve adresini boş duruma getir
@@ -171,21 +161,20 @@ static const EFSCODE static_file_closer(MyFilePtr myfileptr)
     // dosya başarıyla kapatılmışsa eğer, dosya işaretçisi boş olur
     // yani NULL olur ve bu sayede dosyanın kapandığını anlarız
     // aksi halde dosya kapanmamıştır
-    #ifdef __DEBUG_FILESTREAM__
-        if(ISNULL(myfileptr->addr))
-            printf("\n%s\n", "* Dosya Basariyla Kapatildi *");
-        else
-            printf("\n%s\n", "* Dosya Kapatma Islemi Basarisiz Oldu *");
+    #ifdef __DEBUG_MSG_FILESTREAM__
+        DEBUG_PRINT(ISNULL(myfileptr->addr) ?
+            "Dosya Basariyla Kapatildi" :
+            "Dosya Kapatma Islemi Basarisiz Oldu"
+        );
     #endif
 
     // dosya kapatma durumuna göre kod döndürülsün
     return ISNULL(myfileptr->addr) ?
-        EFS_CODE_ERR_CLOSEFAIL // dosya kapatılamadı hatası
-        :
+        EFS_CODE_ERR_CLOSEFAIL : // dosya kapatılamadı hatası
         EFS_CODE_MSG_CLOSED; // dosya başarıyla kapandı
 }
 
-extern const EFSCODE file_closer(MyFilePtr myfileptr)
+extern efscode_s file_closer(MyFilePtr myfileptr)
 {
     // yerel fonksiyonu kullan
     return static_file_closer(myfileptr);
@@ -195,25 +184,24 @@ extern const EFSCODE file_closer(MyFilePtr myfileptr)
     Dosya yapısın inceleyerek dosyanın açık ya da kapalı olmasını
     kontrol eder fakat dosya yapısındaki verilere müdahele edemez
 */
-static const EFSCODE static_file_status(MyFilePtr_s myfileptr)
+static efscode_s static_file_status(MyFilePtr_s myfileptr)
 {
     // Dosya bellek işaretçisini kontrol et ve
     // boş ya da aktif kodunu döndür
-    #ifdef __DEBUG_FILESTREAM__
-        if(ISNULL(myfileptr) || ISNULL(myfileptr->addr))
-            printf("\n%s\n", "* Dosya Durumu Bos *");
-        else
-            printf("\n%s\n", "* Dosya Bellekte Mevcut *");
+    #ifdef __DEBUG_MSG_FILESTREAM__
+        DEBUG_PRINT(ISNULL(myfileptr) || ISNULL(myfileptr->addr) ?
+            "Dosya Durumu Bos" :
+            "Dosya Bellekte Mevcut"
+        );
     #endif
 
     // dosya durumuna göre
     return ISNULL(myfileptr) || ISNULL(myfileptr->addr) ?
-        EFS_CODE_STAT_FREE // dosya boş
-        :
+        EFS_CODE_STAT_FREE : // dosya boş
         EFS_CODE_STAT_ACTIVE; // dosya aktif
 }
 
-extern const EFSCODE file_status(MyFilePtr_s myfileptr)
+extern efscode_s file_status(MyFilePtr_s myfileptr)
 {
     // yerel fonksiyonu kullan
     return static_file_status(myfileptr);
@@ -224,25 +212,23 @@ extern const EFSCODE file_status(MyFilePtr_s myfileptr)
     ve işlem sonrası dosyayı kapatmadan başarı kodunu döndürmek ya da
     dosya vs. yoksa hata kodunu döndürerek kullanıcıya bildirmek
 */
-static const EFSCODE static_file_write(MyFilePtr_s myfileptr, string_s data)
+static efscode_s static_file_write(MyFilePtr_s myfileptr, string_s data)
 {
     // dosya durumunu kontrol etsin ve eğer boşsa hata dönsün
     if(file_status(myfileptr) == EFS_CODE_STAT_FREE)
     {
-        #ifdef __DEBUG_FILESTREAM__
-            printf("\n%s\n", "* Dosyaya Veri Yazilabilmesi Icin Dosyanin Acik Olmasi Zorunludur *");
+        #ifdef __DEBUG_MSG_FILESTREAM__
+            DEBUG_PRINT("Dosyaya Veri Yazilabilmesi Icin Dosyanin Acik Olmasi Zorunludur");
         #endif
-
-        // dosya bulunamadı
-        return EFS_CODE_ERR_FILENOTFOUND;
+        return EFS_CODE_ERR_FILENOTFOUND; // dosya bulunamadı
     }
 
     // dosyaya veriyi yazsın
     if(fprintf(myfileptr->addr, "%s", data) > -1)
     {
         // veri başarıyla dosyaya yazıldı
-        #ifdef __DEBUG_FILESTREAM__
-            printf("\n%s\n", "* Alinan Veri Dosyaya Basariyla Yazildi *");
+        #ifdef __DEBUG_MSG_FILESTREAM__
+            DEBUG_PRINT("Alinan Veri Dosyaya Basariyla Yazildi");
         #endif
 
         // önbellekte tutmadan dosyaya veriyi kaydetsin
@@ -253,15 +239,15 @@ static const EFSCODE static_file_write(MyFilePtr_s myfileptr, string_s data)
     }
 
     // veri yazılamadı hatası
-    #ifdef __DEBUG_FILESTREAM__
-        printf("\n%s\n", "* Alinan Veri Bir Hatadan Dolayi Dosyaya Yazilamadi *");
+    #ifdef __DEBUG_MSG_FILESTREAM__
+        DEBUG_PRINT("Alinan Veri Bir Hatadan Dolayi Dosyaya Yazilamadi");
     #endif
 
     // veri yazılamadı hatası
     return EFS_CODE_ERR_UNWRITTEN;
 }
 
-extern const EFSCODE file_write(MyFilePtr_s myfileptr, string_s data)
+extern efscode_s file_write(MyFilePtr_s myfileptr, string_s data)
 {
     // yerel fonksiyonu çağır
     return static_file_write(myfileptr, data);

@@ -4,24 +4,19 @@
 #define DT_SHUTDOWN_H
 
 // Kütüphaneler
+#include "CompileConf.h"
 #include "OsSupport.h"
 #include "TypeDefine.h"
 
 // Zamanlayıcı Ayarlama Hata Ayıklayıcısı Belirteci
-// #define __DEBUG_SHUTDOWN__
+#ifndef __COMPILE_RELEASE_MODE__
+    #define __DEBUG_MSG_SHUTDOWN__
+#endif
 
 // İşletim sistemine göre zamanlı kapatıcı desteği
-// Windows 32 bit ve 64 bit desteği
-#if _WIN32 || _WIN64
-    #define __SHUTDOWN_OFF__ "shutdown /a & shutdown /s /t"
-    #define __SHUTDOWN_RESTART__ "shtudown /a & shutdown /r /t"
-    #define __SHUTDOWN_SLEEP__ "shutdown /a & rundll32.exe powrprof.dll,SetSuspendState 0,1,0"
-    #define __SHUTDOWN_LOCK__ "shutdown /a & rundll32.exe user32.dll,LockWorkStation"
-    #define __SHUTDOWN_CANCEL__ "shutdown /a"
-// Linux
-#elif __linux__
-    #define __SHUTDOWN_OFF__ "shutdown -h"
-    #define __SHUTDOWN_RESTART__ "shutdown -r"
+#ifdef __linux__
+    #define __SHUTDOWN_OFF__ "shutdown -c && shutdown -h"
+    #define __SHUTDOWN_RESTART__ "shutdown -c && shutdown -r"
     #define __SHUTDOWN_SLEEP__ "systemctl suspend"
     #define __SHUTDOWN_LOCK__ "xdg-screensaver lock"
     #define __SHUTDOWN_CANCEL__ "shutdown -c"
@@ -36,7 +31,7 @@
 #define __SHUTDOWN_COMM_CANCEL__ "-ca"
 
 // İşlem Kayıt Dosyası Adı
-#define __SHUTDOWN_LOG_FILEPATH__ "downtimer.log"
+#define __SHUTDOWN_LOG_FILEPATH__ "DownTimer.log"
 
 // Ana Komutların Kodları
 typedef enum
@@ -47,7 +42,9 @@ typedef enum
     ESH_COMM_SLEEP, // uyku
     ESH_COMM_LOCK, // kilitle
     ESH_COMM_CANCEL // iptal et
-} ESHCOMM;
+} eshcomm;
+
+typedef const eshcomm eshcomm_s;
 
 // Zamanlayıcı İşlem Kodları
 typedef enum
@@ -79,10 +76,13 @@ typedef enum
     ESH_CODE_STAT_FREE, // zamanlayıcı boş
     ESH_CODE_STAT_ENDED, // zamanlayıcı bitti
     ESH_CODE_STAT_TERMINATED // zamanlayıcı elle sonlandırıldı
-} ESHCODE;
+} eshcode;
+
+typedef const eshcode eshcode_s;
 
 // Fonksiyon Prototipleri
 extern intmax_s shutdown_timer_calculate(intmax_s time);
-extern const ESHCODE shutdown_timer(string_s command, intmax_s time, boolean console);
+extern boolean_s shudown_execute(string_s command);
+extern eshcode_s shutdown_timer(string_s command, intmax_s time, boolean console);
 
 #endif

@@ -1,0 +1,6 @@
+[ console ][command: -ca][time: 0D 00Hr 00Min][success: false][os: Linux x86][env: GNOME][root: false]
+[ console ][command: -ca][time: 0D 00Hr 00Min][success: false][os: Linux x64][env: GNOME][root: false]
+[ console ][command: -ca][time: 0D 00Hr 00Min][success: true][os: Linux x64][env: GNOME][root: true]
+[ console ][command: -ca][time: 0D 00Hr 00Min][success: true][os: Linux x64][env: GNOME][root: true]
+[ console ][command: -of][time: 0D 05Hr 21Min][success: true][os: Linux x86][env: GNOME][root: true]
+[ screen ][command: -ca][time: 0D 00Hr 00Min][success: true][os: Linux x64][env: GNOME][root: true]

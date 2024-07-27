@@ -24,7 +24,7 @@ static string_s _strCommands[] =
 };
 
 // zamanlayıcı komutları
-static uint8_s _codeCommands[] =
+static uint32_s _codeCommands[] =
 {
     ESH_COMM_OFF, // kapat
     ESH_COMM_RESTART, // yeniden başlat
@@ -36,12 +36,48 @@ static uint8_s _codeCommands[] =
 static string_s _strEnterTime = "Sureyi \"?(Saat) ?(Dakika)\" Giriniz | Enter The Time \"?(Hour) ?(Minute)\":";
 static string_s _strRandomNumberForTerminate = "* Sonlandirmak Icin Rastgele Numara | Random Number For Terminate *";
 
-static const uint8_s lengthStrArr = SIZEARRAY(_strCommands);
-static const uint8_s lengthCodeArr = SIZEARRAY(_codeCommands);
+static uint32_s lengthStrArr = SIZEARRAY(_strCommands);
+static uint32_s lengthCodeArr = SIZEARRAY(_codeCommands);
 
-// Fonksiyon Prototipler
-static void showCommandList(void);
-static const boolean isCommandFound(string_s argStr);
+// Ekranda komutları çıktı versin
+/*
+    Ekrana kullanılabilecek komutları
+    çıktı veren ve herhangi bir veri almayan
+    basit bir fonksiyon
+*/
+static void showCommandList(void)
+{
+    uint32_t counter = 0; // sayaç
+
+    // döngüyle birlikte çıktı versin
+    while(counter < lengthStrArr && counter < lengthCodeArr)
+    {
+        // çıktı ver ve sayacı arttır
+        printf("%s %u\n", _strCommands[counter], _codeCommands[counter]);
+        ++counter;
+    }
+}
+
+// Komut Metini Kontrolcüsü
+/*
+    Verilen metinin geçerli komutlardan biri olup
+    olmadığını kontrol edip ona göre evet "true" ya da
+    hayır "false" cevabı döndürülür
+*/
+static boolean_s isCommandFound(string_s argStr)
+{
+    // metin boşsa zaten yoktur
+    if(ISNULL(argStr)) return FALSE;
+
+    // sırayla kontrol etsin
+    if(strcmp(argStr, __SHUTDOWN_COMM_OFF__) == 0) return TRUE; // kapatma
+    else if(strcmp(argStr, __SHUTDOWN_COMM_RESTART__) == 0) return TRUE; // yeniden başlatma
+    else if(strcmp(argStr, __SHUTDOWN_COMM_SLEEP__) == 0) return TRUE; // uyku modu
+    else if(strcmp(argStr, __SHUTDOWN_COMM_LOCK__) == 0) return TRUE; // oturumu kilitleme
+    else if(strcmp(argStr, __SHUTDOWN_COMM_CANCEL__) == 0) return TRUE; // iptal etme
+
+    return FALSE; // komut bulunamadı
+}
 
 /* Konsol Mesaj Çıktısı
     Kullanıcıdan verilern mesajı belirtilen standarta
@@ -64,7 +100,7 @@ extern void init_message(string_s message)
     ise gerekli işlem yapılır ve işlem başarılı ise başarı kodu
     döndürür bu sayede komut ekranı çalışmadan işlemler yapılmış olur
 */
-static const EINITCODE static_init_console(int argc, string_s argvptr[])
+static einitcode_s static_init_console(int argc, string_s argvptr[])
 {
     // geçici olarak komutu tutacak değişken
     string_a strCommand = NULL;
@@ -72,20 +108,17 @@ static const EINITCODE static_init_console(int argc, string_s argvptr[])
     // komutu okusun ve bulunmuşsa devam, değilse sonlandırsın
     if(!isCommandFound(argvptr[1]))
     {
-        #ifdef __DEBUG_INIT__
-            printf("\n%s\n", "* Gecerli Islem Komutu Bulunamadi *");
+        #ifdef __DEBUG_MSG_INIT__
+            DEBUG_PRINT("Gecerli Islem Komutu Bulunamadi");
         #endif
-
-        return EINIT_ERR_CONSOLEARG;
+        return EINIT_ERR_CONSOLEARG; // geçersiz argüman hatası
     }
-    else
-    {
-        #ifdef __DEBUG_INIT__
-            printf("\n%s\n", "* Komut Basariyla Bulundu *");
-        #endif
 
-        strCommand = argvptr[1]; // komutu depolasın
-    }
+    #ifdef __DEBUG_MSG_INIT__
+        DEBUG_PRINT("Komut Basariyla Bulundu");
+    #endif
+
+    strCommand = argvptr[1]; // komutu depolasın
 
     uint16_t tempHour = 0; // saat
     uint16_t tempMinute = 0; // dakika
@@ -98,8 +131,8 @@ static const EINITCODE static_init_console(int argc, string_s argvptr[])
             tempHour = 0; // manuel olarak tekrardan saati 0 yapmak
             tempMinute = (!ISNULL(argvptr[2])) ? (int16_t)strtoul(argvptr[2], NULL, 0) : 0;
 
-            #ifdef __DEBUG_INIT__
-                printf("\n%s\n", "* Konsoldan Sadece Dakika Bilgisi Okundu *");
+            #ifdef __DEBUG_MSG_INIT__
+                DEBUG_PRINT("Konsoldan Sadece Dakika Bilgisi Okundu");
             #endif
         break;
         // komut, saat ve dakika
@@ -107,8 +140,8 @@ static const EINITCODE static_init_console(int argc, string_s argvptr[])
             tempHour = (!ISNULL(argvptr[2])) ? (int16_t)strtoul(argvptr[2], NULL, 0) : 0;
             tempMinute = (!ISNULL(argvptr[3])) ? (int16_t)strtoul(argvptr[3], NULL, 0) : 0;
 
-            #ifdef __DEBUG_INIT__
-                printf("\n%s\n", "* Konsoldan Saat ve Dakika Bilgisi Okundu *");
+            #ifdef __DEBUG_MSG_INIT__
+                DEBUG_PRINT("Konsoldan Saat ve Dakika Bilgisi Okundu");
             #endif
         break;
     }
@@ -118,26 +151,20 @@ static const EINITCODE static_init_console(int argc, string_s argvptr[])
     {
         // zamanlayıcı başarıyla çalıştırıldı
         case ESH_CODE_MSG_TIMERRUNNED:
-            #ifdef __DEBUG_INIT__
-                printf("\n%s\n", "* Konsol Komutlari Kullanarak Zamanlayiciniz Basariyla Olusturuldu *");
+            #ifdef __DEBUG_MSG_INIT__
+                DEBUG_PRINT("Konsol Komutlari Kullanarak Zamanlayiciniz Basariyla Olusturuldu");
             #endif
-
-            // konsol işlemi başarılı kodu
-            return EINIT_MSG_CONSOLEOK;
-        // diğer
-        default: break;
+            return EINIT_MSG_CONSOLEOK; // konsol işlemi başarılı kodu
     }
 
     // komut var ama zamanlayıcı oluşturma hatası döndür
-    #ifdef __DEBUG_INIT__
-        printf("\n%s\n", "* Konsole Komutlari Ile Zamanlayici Olusturulamadi *");
+    #ifdef __DEBUG_MSG_INIT__
+        DEBUG_PRINT("Konsole Komutlari Ile Zamanlayici Olusturulamadi");
     #endif
-
-    // zamanlayıcı hatalı işlem kodu
-    return EINIT_ERR_TIMER;
+    return EINIT_ERR_TIMER; // zamanlayıcı hatalı işlem kodu
 }
 
-extern const EINITCODE init_console(int argc, string_s argvptr[])
+extern einitcode_s init_console(int argc, string_s argvptr[])
 {
     // yerel kodu çalıştır
     return static_init_console(argc, argvptr);
@@ -149,7 +176,7 @@ extern const EINITCODE init_console(int argc, string_s argvptr[])
     gösterilmeyeceği belirtilir, aksi halde konsol çalışır
     ve sonlanır ve ekran çalıştırılmaz
 */
-static const EINITCODE static_init_screen(void)
+static einitcode_s static_init_screen(void)
 {
     // girilecek komut, saat ve dakika tutulacak
     int16_t tempCommand; // komut
@@ -194,12 +221,10 @@ static const EINITCODE static_init_screen(void)
         break;
         // geçersiz, sonlandırıldı
         default:
-            #ifdef __DEBUG_INIT__
-                printf("\n%s%d%s\n", "* Gecersiz Islem Komutu (", tempCommand, ") Girildi *");
+            #ifdef __DEBUG_MSG_INIT__
+                DEBUG_PRINT("Gecersiz Islem Komutu Girildi");
             #endif
-
-            // sonlandırma komutu
-            return EINIT_STAT_TERMINATED;
+            return EINIT_STAT_TERMINATED; // sonlandırma komutu
     }
 
     // süreyi girmesini istemek
@@ -216,73 +241,24 @@ static const EINITCODE static_init_screen(void)
         {
             // zamanlayıcı başarıyla çalıştırıldı
             case ESH_CODE_MSG_TIMERRUNNED:
-                #ifdef __DEBUG_INIT__
-                    printf("\n%s\n", "* Ekran Menusu Kullanarak Zamanlayiciniz Basariyla Olusturuldu *");
+                #ifdef __DEBUG_MSG_INIT__
+                    DEBUG_PRINT("Ekran Menusu Kullanarak Zamanlayiciniz Basariyla Olusturuldu");
                 #endif
-
-                // ekran işlemi başarılı kodu
-                return EINIT_MSG_SCREENOK;
+                return EINIT_MSG_SCREENOK; // ekran işlemi başarılı kodu
             // komut var ama zamanlayıcı oluşturma hatası döndür
             default:
-                #ifdef __DEBUG_INIT__
-                    printf("\n%s\n", "* Ekran Menusu Ile Zamanlayici Olusturulamadi *");
+                #ifdef __DEBUG_MSG_INIT__
+                    DEBUG_PRINT("Ekran Menusu Ile Zamanlayici Olusturulamadi");
                 #endif
-
-                // zamanlayıcı hatalı işlem kodu
-                return EINIT_ERR_TIMER;
+                return EINIT_ERR_TIMER; // zamanlayıcı hatalı işlem kodu
         }
 
     // ekran işlemi başarılı kodu
     return EINIT_MSG_SCREENOK;
 }
 
-extern const EINITCODE init_screen(void)
+extern einitcode_s init_screen(void)
 {
     // yerel kodu çalıştır
     return static_init_screen();
-}
-
-/* Ekranda komutları çıktı versin
-    Ekrana kullanılabilecek komutları
-    çıktı veren ve herhangi bir veri almayan
-    basit bir fonksiyon
-*/
-static void showCommandList(void)
-{
-    uint8_t counter = 0; // sayaç
-
-    // döngüyle birlikte çıktı versin
-    while(counter < lengthStrArr && counter < lengthCodeArr)
-    {
-        // çıktı ver ve sayacı arttır
-        printf("%s %u\n", _strCommands[counter], _codeCommands[counter]);
-        ++counter;
-    }
-}
-
-/* Komut Metini Kontrolcüsü
-    Verilen metinin geçerli komutlardan biri olup
-    olmadığını kontrol edip ona göre evet "true" ya da
-    hayır "false" cevabı döndürülür
-*/
-static const boolean isCommandFound(string_s argStr)
-{
-    // metin boşsa zaten yoktur
-    if(ISNULL(argStr))
-        return FALSE;
-
-    // sırayla kontrol etsin
-    if(strcmp(argStr, __SHUTDOWN_COMM_OFF__) == 0) // kapatma
-        return TRUE;
-    else if(strcmp(argStr, __SHUTDOWN_COMM_RESTART__) == 0) // yeniden başlatma
-        return TRUE;
-    else if(strcmp(argStr, __SHUTDOWN_COMM_SLEEP__) == 0) // uyku modu
-        return TRUE;
-    else if(strcmp(argStr, __SHUTDOWN_COMM_LOCK__) == 0) // oturumu kilitleme
-        return TRUE;
-    else if(strcmp(argStr, __SHUTDOWN_COMM_CANCEL__) == 0) // iptal etme
-        return TRUE;
-
-    // komut bulunamadı
-    return FALSE;
 }

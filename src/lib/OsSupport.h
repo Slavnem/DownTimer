@@ -3,53 +3,41 @@
 #ifndef DT_OS_SUPPORT_H
 #define DT_OS_SUPPORT_H
 
-// İşletim Sistemi Desteği Hata Ayıklayıcısı Belirteci
-// #define __DEBUG_OS_SUPPORT__
-
 // Kütüphaneler
+#include "CompileConf.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <unistd.h> // geteuid fonksiyonu için gerekli kütüphane
 #include "TypeDefine.h"
 #include "Macro.h"
 
-// Geçersiz İşletim Sistemi Kontrolü
-#if !_WIN32 && !_WIN64 && !__linux__
-    #error "Only Linux, Windows x86 And x64's Supporting. Unsupported OS Error!"
-#endif
-
-// Windows Desteği
-#if _WIN32 || _WIN64
-    #if _WIN32 /* 32 Bit Desteği */
-        #define __OS__ "Windows x86"
-    #elif _WIN64 /* 64 Bit Desteği */
-        #define __OS__ "Windows x64"
-    #endif
+// İşletim Sistemi Desteği Hata Ayıklayıcısı Belirteci
+#ifndef __COMPILE_RELEASE_MODE__
+    #define __DEBUG_MSG_OS_SUPPORT__
 #endif
 
 // Linux Desteği
-#if __linux__
+#ifdef __linux__
     // Masaüstü Arayüzleri
     #define __DESKTOP_ENV_GNOME__ "GNOME"
     #define __DESKTOP_ENV_KDE__ "KDE"
     #define __DESKTOP_ENV_XFCE__ "XFCE"
     #define __DESKTOP_ENV_MATE__ "MATE"
-
-    #ifdef __i386__ /* 32 Bit Desteği */
-        #define __OS__ "Linux x86"
-    #elif __x86_64__ /* 64 Bit Desteği */
-        #define __OS__ "Linux x64"
-    #endif
 #endif
 
+// Kök Yönetici Bilgisi
+#define __ISROOT__ (geteuid() == 0 ? TRUE : FALSE) // Eğer 0'sa Kök Kullanıcıdır
+
 // Bit Mimarisine Göre Destek
-// Windows x64 & Linux x64
-#if _WIN64 || __x86_64__
-    #define __OS_ARCH_x86__ // İşletim Sistemi 32 Bit Mimarisi
+// Linux x64
+#ifdef __x86_64__
+    #define __OS_NAME__ "Linux x64" // 64 Bit
+    #define __OS_ARCH_x64__ // İşletim Sistemi 32 Bit Mimarisi
     #define __INTMAX_FORMAT__ "%lu" /* en büyük int sayı printf desteği */
-// Windows x86 & Linux x86
-#elif _WIN32 || __i386__
-    #define __OS_ARCH_x64__ // İşletim Sistemi 64 Bit Mimarisi
+// Linux x86
+#elif defined __i386__
+    #define __OS_NAME__ "Linux x86" // 32 Bit
+    #define __OS_ARCH_x86__ // İşletim Sistemi 64 Bit Mimarisi
     #define __INTMAX_FORMAT__ "%llu" /* en büyük int sayı printf desteği */
 #endif
 

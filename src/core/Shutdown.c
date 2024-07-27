@@ -22,18 +22,27 @@
 */
 static intmax_s static_shutdown_timer_calculate(intmax_s time)
 {
-    // Eğer geçersiz süre iseoşsa
-    if(time < 1) return 0;
+    // Eğer geçersiz süre ise 0 dönsün
+    if(time < 1)
+    {
+        #ifdef __DEBUG_MSG_SHUTDOWN__
+            DEBUG_PRINT("Gecersiz Sure");
+        #endif
+        return 0;
+    }
 
-    // Windows için
-    #if _WIN32 || _WIN64
-        return (intmax_s)(time * 60);
     // Linux için
-    #elif __linux__
+    #ifdef __linux__
+        #ifdef __DEBUG_MSG_SHUTDOWN__
+            DEBUG_PRINT("Linux'e Gore Sure Ayarlandi");
+        #endif
         return (intmax_s)(time);
     #endif
 
-    // bilinmeyen
+    // bilinmeyen işletim sistemi var
+    #ifdef __DEBUG_MSG_SHUTDOWN__
+        DEBUG_PRINT("Desteklenmeyen Isletim Sistemi Kullaniliyor");
+    #endif
     return 0;
 }
 
@@ -41,6 +50,47 @@ extern intmax_s shutdown_timer_calculate(intmax_s time)
 {
     // yerel fonksiyonu çalıştır
     return static_shutdown_timer_calculate(time);
+}
+
+/* Kapatma Komutu Çalıştırıcı
+    El ile işlem yapmak yerine bir fonksiyona bağlayarak
+    işlem yapmak daha iyi bir seçecek olucaktır ve fonksiyonun
+    döndürdüğü değere göre daha kolay işlem yapılabilir
+*/
+static boolean_s static_shutdown_execute(string_s command)
+{
+    // komut boşsa hata dönsün
+    if(ISNULL(command))
+    {
+        #ifdef __DEBUG_MSG_SHUTDOWN__
+            DEBUG_PRINT("Komut Yok");
+        #endif
+        return FALSE;
+    }
+
+    #ifdef __DEBUG_MSG_SHUTDOWN__
+        DEBUG_PRINT("Komut Calistiriliyor");
+    #endif
+
+    // komutu çalıştırsın
+    int32_s result = system(command);
+
+    #ifdef __DEBUG_MSG_SHUTDOWN__
+        DEBUG_PRINT(!result ?
+            "Komut Basariyla Calisti" :
+            "Komut Basarisiz Oldu"
+        );
+    #endif
+
+    // komut sonucuna göre değer döndürsün
+    // 0 değilse komut çalışması başarısız olmuştur
+    return (boolean)!result;
+}
+
+extern const boolean shudown_execute(string_s command)
+{
+    // yerel fonksiyonu çalıştır
+    return static_shutdown_execute(command);
 }
 
 /* Zamanlayıcı
@@ -53,21 +103,19 @@ extern intmax_s shutdown_timer_calculate(intmax_s time)
     eğer kod girilmeden sadece sayı girilmişse, biz bunu bilgisayar kapatma
     olarak varsayacağız ve süreyi kullanarak işlem yapacağız
 */
-static const ESHCODE static_shutdown_timer(string_s command, intmax_s time, boolean console)
+static eshcode_s static_shutdown_timer(string_s command, intmax_s time, boolean console)
 {
     // geçerli komut ve zaman boşsa
     if(ISNULL(command) && time < 1)
     {
-        #ifdef __DEBUG_SHUTDOWN__
-            printf("\n%s\n", "* Zamanlayici Icin Girdiginiz Degerler Gecersiz *");
+        #ifdef __DEBUG_MSG_SHUTDOWN__
+            DEBUG_PRINT("Zamanlayici Icin Girdiginiz Degerler Gecersiz");
         #endif
-
-        // geçersiz komut hatası
-        return ESH_CODE_ERR_INVALID;
+        return ESH_CODE_ERR_INVALID; // geçersiz komut hatası
     }
     
-    #ifdef __DEBUG_SHUTDOWN__
-        printf("\n%s\n", "* Zamanlayici Icin Girdiginiz Degerler Gecerli *");
+    #ifdef __DEBUG_MSG_SHUTDOWN__
+        DEBUG_PRINT("Zamanlayici Icin Girdiginiz Degerler Gecerli");
     #endif
 
     intmax_s calcTime = shutdown_timer_calculate(time); // işletim sistemine göre süre
@@ -92,24 +140,18 @@ static const ESHCODE static_shutdown_timer(string_s command, intmax_s time, bool
         snprintf(buffer, SAFESIZESTR(buffer), "%s", __SHUTDOWN_CANCEL__);
     else
     {
-        #ifdef __DEBUG_SHUTDOWN__
-            printf("\n%s\n", "* Bilinmeyen Zamanlama Komutu Girildi *");
+        #ifdef __DEBUG_MSG_SHUTDOWN__
+            DEBUG_PRINT("Bilinmeyen Zamanlama Komutu Girildi");
         #endif
-
-        // geçersiz, bilinmeyen komut
-        return ESH_CODE_ERR_UNKNOWNCOMM;
+        return ESH_CODE_ERR_UNKNOWNCOMM; // geçersiz, bilinmeyen komut
     }
 
-    #ifdef __DEBUG_SHUTDOWN__
-        printf("\n%s\n", "* Gecerli Komut Algilandi *");
+    #ifdef __DEBUG_MSG_SHUTDOWN__
+        DEBUG_PRINT("Gecerli Komut Algilandi");
     #endif
 
-    // zamanlayıcı komutunu çalıştırsın ve tutsun
-    system(buffer);
-
-    #ifdef __DEBUG_SHUTDOWN__
-        printf("\n%s\n", "* Zamanlayici Komutu Calistirildi *");
-    #endif
+    // komutu çalıştırsın ve tutsun
+    const boolean resultCommand = shudown_execute(buffer);
 
     // dosyaya veri kaydetmek için dosya yapısı işaretçisi
     MyFile logFile = {
@@ -122,11 +164,11 @@ static const ESHCODE static_shutdown_timer(string_s command, intmax_s time, bool
     file_opener(&logFile, logFile.path, logFile.otype);
 
     // dosya açma durumu kontrolü
-    #ifdef __DEBUG_SHUTDOWN__
-        if(file_status(&logFile) == EFS_CODE_STAT_FREE)
-            printf("\n%s\n", "* Dosya Acilamadigi Icin Dosyaya Zamanlayici Islem Sonucu Kayit Edilmeyecek *");
-        else
-            printf("\n%s\n", "* Dosya Basariyla Acildi *");
+    #ifdef __DEBUG_MSG_SHUTDOWN__
+        DEBUG_PRINT(file_status(&logFile) == EFS_CODE_STAT_FREE ? 
+            "Dosya Acilamadigi Icin Dosyaya Zamanlayici Islem Sonucu Kayit Edilmeyecek" :
+            "Dosya Basariyla Acildi"
+        );
     #endif
 
     // dosya açma başarısız ise direk kod dönsün
@@ -137,17 +179,18 @@ static const ESHCODE static_shutdown_timer(string_s command, intmax_s time, bool
     char tempText[512];
 
     // kaydedilecek metini ayarlamak
-    snprintf(tempText,
-        SAFESIZESTR(tempText),
-        "[ %s ][%s: %s][%s: %0u%s %02u%s %02u%s][%s: %s][%s: %s]\n",
+    snprintf(tempText, SAFESIZESTR(tempText),
+        "[ %s ][%s: %s][%s: %0u%s %02u%s %02u%s][%s: %s][%s: %s][%s: %s][%s: %s]\n",
         (console ? "console" : "screen"), // konsoldan mı yoksa ekrandan mı çalıştı?
         "command", command, // komut metini
         "time", // süre
             MINUTETODAY(time), "D", // gün
             CLOCKHOUR(MINUTETOHOUR(time)), "Hr", // saat
             CLOCKMINUTE(time), "Min", // dakika
-        "os", __OS__, // işletim sistemi
-        "env", myDesktopEnv() // masaüstü ortamı
+        "success", (resultCommand ? "true" : "false"),
+        "os", __OS_NAME__, // işletim sistemi
+        "env", myDesktopEnv(), // masaüstü ortamı
+        "root", (__ISROOT__ ? "true" : "false")
     );
 
     // dosyaya veri yazdırmak
@@ -156,15 +199,15 @@ static const ESHCODE static_shutdown_timer(string_s command, intmax_s time, bool
     // dosyayı kapatsın
     file_closer(&logFile);
 
-    #ifdef __DEBUG_SHUTDOWN__
-        printf("\n%s\n", "* Dosyaya Zamanlayici İslem Sonucu Kaydedildi *");
+    #ifdef __DEBUG_MSG_SHUTDOWN__
+        DEBUG_PRINT("Dosyaya Zamanlayici İslem Sonucu Kaydedildi");
     #endif
 
     // zamanlayıcı çalıştırıldı başarı kodu
     return ESH_CODE_MSG_TIMERRUNNED;
 }
 
-extern const ESHCODE shutdown_timer(string_s command, intmax_s time, boolean console)
+extern eshcode_s shutdown_timer(string_s command, intmax_s time, boolean console)
 {
     // yerel fonksiyonu kullan
     return static_shutdown_timer(command, time, console);

@@ -7,6 +7,9 @@
 #define FALSE 0
 #define TRUE 1
 typedef char boolean;
+typedef const boolean boolean_s;
+typedef const boolean* booleanptr_a;
+typedef const boolean* const booleanptr_s;
 
 // 8 Bit Tamsayılar
 typedef signed char int8_t;
@@ -27,18 +30,16 @@ typedef const int32_t int32_s;
 typedef const uint32_t uint32_s;
 
 // 64 Bit Tamsayılar
-#if defined(_WIN32) || defined(__i386__) // Windows x86 & Linux x86
+#ifdef __i386__ // Windows x86 & Linux x86
     typedef signed long int intmax_t;
     typedef unsigned long int uintmax_t;
     typedef const intmax_t intmax_s;
     typedef const uintmax_t uintmax_s;
-#elif defined(_WIN64) || defined(__x86_64__) // Windows x64 & Linux x64
+#elif defined __x86_64__ // Windows x64 & Linux x64
     typedef signed long long int intmax_t;
     typedef unsigned long long int uintmax_t;
     typedef const intmax_t intmax_s;
     typedef const uintmax_t uintmax_s;
-#else // Geçersiz İşletim Sistemi
-    #error "Only Linux x86_64 & Windows x86_64 Supporting. Unsupported Os For Type Defination!"
 #endif
 
 // Ondalıklar

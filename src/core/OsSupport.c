@@ -12,13 +12,12 @@
 // Fonksiyonlar
 static string_s static_myDesktopEnv(void)
 {
-    // Windows ise "Windows Shell" kullanıldığı varsayılacak
-    #if _WIN32 || _WIN64
-    	#if __DEBUG_OS_SUPPORT__
-    		printf("\n%s\n", "* Windows Isletim Sistemi Tespit Edildi *");
+    // Linux değils eğer bilinmeyen bir masaüstü dür
+    #ifndef __linux__
+    	#if __DEBUG_MSG_OS_SUPPORT__
+    		DEBUG_PRINT("Desteklenmeyen Isletim Sistemi Tespit Edildi");
     	#endif
-    	
-        return "WINDOWS SHELL";
+        return NULL;
     #endif
 
     // kullanılan xdg arayüzünü alsın
@@ -27,26 +26,23 @@ static string_s static_myDesktopEnv(void)
     // boş değilse eğer, arayüz bulundu
     if(!ISNULL(desktop_env))
     {
-        #ifdef __DEBUG_OS_SUPPORT__
-            printf("\n%s\n", "* Linux Masaustu Arayuzu Bulundu *");
+        #ifdef __DEBUG_MSG_OS_SUPPORT__
+            DEBUG_PRINT("Linux Masaustu Arayuzu Bulundu");
         #endif
-
-        return desktop_env;
+        return desktop_env; // masaüstü ortamını döndürsün
     }
 
     // arayüz oturumunu alsın
     desktop_env = getenv("DESKTOP_SESSION");
 
     // boş değilse arayüz bulundu, aksi halde boş
-    #ifdef __DEBUG_OS_SUPPORT__
-        if(ISNULL(desktop_env))
-            printf("\n%s\n", "* Linux Masaustu Arayuzu Bulunamadi *");
-        else
-            printf("\n%s%s%s\n", "* Bulunan Linux Masaustu Arayuzu: ", desktop_env, " *");
+    #ifdef __DEBUG_MSG_OS_SUPPORT__
+        DEBUG_PRINT(ISNULL(desktop_env) ?
+            "Linux Masaustu Arayuzu Bulunamadi" :
+            desktop_env
+        );
     #endif
-
-    // masaüstü arayüzü sonucunu döndür
-    return desktop_env;
+    return desktop_env; // masaüstü arayüzü sonucunu döndür
 }
 
 extern string_s myDesktopEnv(void)

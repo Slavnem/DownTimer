@@ -3,11 +3,14 @@
 #ifndef DT_INIT_H
 #define DT_INIT_H
 
-// Başlangıç Hata Ayıklayıcısı Belirteci
-// #define __DEBUG_INIT__
-
 // Kütüphaneler
+#include "CompileConf.h"
 #include "TypeDefine.h"
+
+// Başlangıç Hata Ayıklayıcısı Belirteci
+#ifndef __COMPILE_RELEASE_MODE__
+    #define __DEBUG_MSG_INIT__
+#endif
 
 // DTINIT Kodları
 typedef enum
@@ -27,10 +30,12 @@ typedef enum
     EINIT_STAT_TERMINATED, // elle sonlandırıldı
     EINIT_STAT_CONSOLEARGNULL, // konsol argümanı boş
     EINIT_STAT_SCREENARGNULL // normal ekran argümanı boş
-} EINITCODE;
+} einitcode;
+
+typedef const einitcode einitcode_s;
 
 extern void init_message(string_s message);
-extern const EINITCODE init_console(int argc, string_s argvptr[]);
-extern const EINITCODE init_screen(void);
+extern einitcode_s init_console(int argc, string_s argvptr[]);
+extern einitcode_s init_screen(void);
 
 #endif

@@ -3,12 +3,15 @@
 #ifndef DT_MACRO_H
 #define DT_MACRO_H
 
+// Kütüphaneler
+#include <stdio.h>
+
 // Null mu?
 /*
     Genel amaç olarak işaretçi değişkenin
     NULL yani boş olup olmadığını kontrol etmek için
 */
-#define ISNULL(ptr) (ptr == NULL)
+#define ISNULL(ptr) ((ptr) == NULL)
 
 // Dizi mi?
 /*
@@ -50,5 +53,13 @@
         ++count; \
     count; \
 })
+
+// Hata Derleyicisi Çıktısı
+/*
+    Hata derleyici aktif olduğunda kullanılacak
+    basitçe hata çıktısı anlaşılacak şekilde
+    gelen metini çıktı verebilen bir makro
+*/
+#define DEBUG_PRINT(str) (printf("\n* %s *\n", !ISNULL(str) ? str : "Debug"))
 
 #endif

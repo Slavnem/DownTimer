@@ -3,11 +3,14 @@
 #ifndef DT_MEMALLOCATION_H
 #define DT_MEMALLOCATION_H
 
-// Bellek Tahsis Etme Hata Ayıklayıcısı Belirteci
-// #define __DEBUG_MEMALLOCATION__
-
 // Kütüphaneler
+#include "CompileConf.h"
 #include "TypeDefine.h"
+
+// Bellek Tahsis Etme Hata Ayıklayıcısı Belirteci
+#ifndef __COMPILE_RELEASE_MODE__
+    #define __DEBUG_MSG_MEMALLOCATION__
+#endif
 
 // Fonksiyon Prototipleri
 extern vptr mem_alloc(vptr, uintmax_s);

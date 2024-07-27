@@ -3,13 +3,16 @@
 #ifndef DT_FILESTREAM_H
 #define DT_FILESTREAM_H
 
-// Dosya İşleyicisi Hata Ayıklayıcısı Belirteci
-// #define __DEBUG_FILESTREAM__
-
 // Kütüphaneler
+#include "CompileConf.h"
 #include <stdio.h>
 #include "TypeDefine.h"
 #include "Macro.h"
+
+// Dosya İşleyicisi Hata Ayıklayıcısı Belirteci
+#ifndef __COMPILE_RELEASE_MODE__
+    #define __DEBUG_MSG_FILESTREAM__
+#endif
 
 // Dosya Türü Tanımlaması
 typedef FILE file, *fileptr; // korumasız
@@ -40,7 +43,9 @@ typedef enum
     EFS_OTYPE_ADDREAD, // okuma ve ekleme
     EFS_OTYPE_ADDBIN, // sondan eklemeye ikilik sistemde devam et, ekleme
     EFS_OTYPE_ADDREADBIN, // sondan eklemeye ikilik sistemde devam et, okuma ve ekleme
-} EFSOTYPE;
+} efsotype;
+
+typedef const efsotype efsotype_s;
 
 // Dosya İşlem Kodları
 typedef enum
@@ -70,14 +75,16 @@ typedef enum
     EFS_CODE_STAT_UNKNOWN, // bilinmiyor
     EFS_CODE_STAT_OPENEXCP, // dosya açmada istisna
     EFS_CODE_STAT_CLOSEXCP // dosya kapamada istisna
-} EFSCODE;
+} efscode;
+
+typedef const efscode efscode_s;
 
 // Dosya Yapısı
 typedef struct myfile
 {
     fileptr addr; // dosya bellek adresi
     string_a path; // dosya yolu
-    EFSOTYPE otype; // dosya açma türü
+    efsotype otype; // dosya açma türü
 } MyFile;
 
 typedef MyFile *MyFilePtr; // işaretçi
@@ -86,9 +93,9 @@ typedef const MyFile* MyFilePtr_a; // bellek adresinden değiştirilebilir
 typedef const MyFile* const MyFilePtr_s; // hiçbir şekilde değiştirilemez
 
 // Fonksiyon Prototipleri
-extern const EFSCODE file_opener(MyFilePtr myfileptr, string_s filepath, EFSOTYPE opentype);
-extern const EFSCODE file_closer(MyFilePtr myfileptr);
-extern const EFSCODE file_status(MyFilePtr_s myfileptr);
-extern const EFSCODE file_write(MyFilePtr_s myfileptr, string_s data);
+extern efscode_s file_opener(MyFilePtr myfileptr, string_s filepath, efsotype_s opentype);
+extern efscode_s file_closer(MyFilePtr myfileptr);
+extern efscode_s file_status(MyFilePtr_s myfileptr);
+extern efscode_s file_write(MyFilePtr_s myfileptr, string_s data);
 
 #endif
