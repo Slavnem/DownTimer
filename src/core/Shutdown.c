@@ -121,11 +121,11 @@ static eshcode_s static_shutdown_timer(string_s command, intmax_s time, boolean 
     char buffer[256];
 
     // sistemi kapat
-    if((ISNULL(command) && time > 0) || strcmp(command, __SHUTDOWN_COMM_OFF__) == 0)
-        snprintf(buffer, SAFESIZESTR(buffer), "%s " __INTMAX_FORMAT__, __SHUTDOWN_OFF__, shutdown_timer_calculate(time));
+    if(strcmp(command, __SHUTDOWN_COMM_OFF__) == 0)
+        snprintf(buffer, SAFESIZESTR(buffer), "%s " __INTMAX_FORMAT__, __SHUTDOWN_OFF__, static_shutdown_timer_calculate(time));
     // yeniden başlat
     else if(strcmp(command, __SHUTDOWN_COMM_RESTART__) == 0)
-        snprintf(buffer, SAFESIZESTR(buffer), "%s " __INTMAX_FORMAT__, __SHUTDOWN_RESTART__, shutdown_timer_calculate(time));
+        snprintf(buffer, SAFESIZESTR(buffer), "%s " __INTMAX_FORMAT__, __SHUTDOWN_RESTART__, static_shutdown_timer_calculate(time));
     // uyku
     else if(strcmp(command, __SHUTDOWN_COMM_SLEEP__) == 0)
         snprintf(buffer, SAFESIZESTR(buffer), "%s", __SHUTDOWN_SLEEP__);

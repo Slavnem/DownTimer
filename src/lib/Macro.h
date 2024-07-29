@@ -61,21 +61,21 @@
     gelen metini çıktı verebilen bir makro
 */
 #define DEBUG_PRINT_MSG(title, text) ({ \
-    printf("\n# MSG # %s: %s\n", \
+    printf("\n[MSG] %s: %s\n", \
         !ISNULL(title) ? title : "DEBUG", \
         !ISNULL(text) ? text : "Debug" \
     ); \
 })
 
 #define DEBUG_PRINT_ERROR(title, text) ({ \
-    printf("\n# ERROR # %s: %s\n", \
+    printf("\n[ERROR] %s: %s\n", \
         !ISNULL(title) ? title : "DEBUG ERROR", \
         !ISNULL(text) ? text : "Debug" \
     ); \
 })
 
 #define DEBUG_PRINT_WARNING(title, text) ({ \
-    printf("\n# WARN # %s: %s\n", \
+    printf("\n[WARN] %s: %s\n", \
         !ISNULL(title) ? title : "DEBUG WARNING", \
         !ISNULL(text) ? text : "Debug" \
     ); \
