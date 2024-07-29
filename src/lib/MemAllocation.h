@@ -4,12 +4,12 @@
 #define DT_MEMALLOCATION_H
 
 // Kütüphaneler
-#include "CompileConf.h"
 #include "TypeDefine.h"
 
 // Bellek Tahsis Etme Hata Ayıklayıcısı Belirteci
 #ifndef __COMPILE_RELEASE_MODE__
     #define __DEBUG_MSG_MEMALLOCATION__
+    #define __DEBUG_MSG_MEMALLOCATION_TITLE__ "MEM ALLOCATION"
 #endif
 
 // Fonksiyon Prototipleri

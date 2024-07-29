@@ -15,7 +15,7 @@ static string_s static_myDesktopEnv(void)
     // Linux değils eğer bilinmeyen bir masaüstü dür
     #ifndef __linux__
     	#if __DEBUG_MSG_OS_SUPPORT__
-    		DEBUG_PRINT("Desteklenmeyen Isletim Sistemi Tespit Edildi");
+    		DEBUG_PRINT_ERROR(__DEBUG_MSG_OS_SUPPORT_TITLE__, "Desteklenmeyen Isletim Sistemi Tespit Edildi");
     	#endif
         return NULL;
     #endif
@@ -27,7 +27,7 @@ static string_s static_myDesktopEnv(void)
     if(!ISNULL(desktop_env))
     {
         #ifdef __DEBUG_MSG_OS_SUPPORT__
-            DEBUG_PRINT("Linux Masaustu Arayuzu Bulundu");
+            DEBUG_PRINT_MSG(__DEBUG_MSG_OS_SUPPORT_TITLE__, "Linux Masaustu Arayuzu Bulundu");
         #endif
         return desktop_env; // masaüstü ortamını döndürsün
     }
@@ -37,10 +37,9 @@ static string_s static_myDesktopEnv(void)
 
     // boş değilse arayüz bulundu, aksi halde boş
     #ifdef __DEBUG_MSG_OS_SUPPORT__
-        DEBUG_PRINT(ISNULL(desktop_env) ?
-            "Linux Masaustu Arayuzu Bulunamadi" :
-            desktop_env
-        );
+        ISNULL(desktop_env) ?
+            DEBUG_PRINT_MSG(__DEBUG_MSG_OS_SUPPORT_TITLE__, "Linux Masaustu Arayuzu Bulunamadi")
+            : DEBUG_PRINT_ERROR(__DEBUG_MSG_OS_SUPPORT_TITLE__, desktop_env);
     #endif
     return desktop_env; // masaüstü arayüzü sonucunu döndür
 }

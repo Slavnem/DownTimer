@@ -4,7 +4,6 @@
 #define DT_OS_SUPPORT_H
 
 // Kütüphaneler
-#include "CompileConf.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> // geteuid fonksiyonu için gerekli kütüphane
@@ -14,6 +13,7 @@
 // İşletim Sistemi Desteği Hata Ayıklayıcısı Belirteci
 #ifndef __COMPILE_RELEASE_MODE__
     #define __DEBUG_MSG_OS_SUPPORT__
+    #define __DEBUG_MSG_OS_SUPPORT_TITLE__ "OS SUPPORT"
 #endif
 
 // Linux Desteği
@@ -31,12 +31,12 @@
 // Bit Mimarisine Göre Destek
 // Linux x64
 #ifdef __x86_64__
-    #define __OS_NAME__ "Linux x64" // 64 Bit
+    #define __OS_ARCH_NAME__ "Linux x64" // 64 Bit
     #define __OS_ARCH_x64__ // İşletim Sistemi 32 Bit Mimarisi
     #define __INTMAX_FORMAT__ "%lu" /* en büyük int sayı printf desteği */
 // Linux x86
 #elif defined __i386__
-    #define __OS_NAME__ "Linux x86" // 32 Bit
+    #define __OS_ARCH_NAME__ "Linux x86" // 32 Bit
     #define __OS_ARCH_x86__ // İşletim Sistemi 64 Bit Mimarisi
     #define __INTMAX_FORMAT__ "%llu" /* en büyük int sayı printf desteği */
 #endif

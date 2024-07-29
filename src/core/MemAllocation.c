@@ -25,7 +25,7 @@ extern vptr mem_alloc(vptr addrptr, uintmax_s maxsize)
     {
         // bellek hata ayıklayıcısı aktifse eğer
         #ifdef __DEBUG_MSG_MEMALLOCATION__
-            DEBUG_PRINT("Bellek Alani Ayrilamadi, Zaten Dolu");
+            DEBUG_PRINT_ERROR(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Bellek Alani Ayrilamadi, Zaten Dolu");
         #endif
         return NULL; // boş adres
     }
@@ -36,10 +36,9 @@ extern vptr mem_alloc(vptr addrptr, uintmax_s maxsize)
     // bellek alanı başarıyla ayrılıp ayrılmamaya göre
     // kontrol sağlayıp başarıyla işlemi sonlandırsın
     #ifdef __DEBUG_MSG_MEMALLOCATION__
-        DEBUG_PRINT(ISNULL(addrptr) ?
-            "Yeni Bellek Alani Ayrilamadi, Bellek Musait Degil" :
-            "Bellek Alani Basariyla Tahsis Edildi"
-        );
+        ISNULL(addrptr) ?
+            DEBUG_PRINT_WARNING(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Yeni Bellek Alani Ayrilamadi, Bellek Musait Degil")
+            : DEBUG_PRINT_MSG(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Bellek Alani Basariyla Tahsis Edildi");
     #endif
     return addrptr; // boşsa zaten NULL olur aksi halde bellek adresi döner
 }
@@ -60,8 +59,8 @@ extern vptr mem_realloc(vptr addrptr, uintmax_s resize)
 	if (ISNULL(addrptr))
     {
         #ifdef __DEBUG_MSG_MEMALLOCATION__
-            DEBUG_PRINT("Bos Bir Bellek Adresi Yeniden Boyutlandirilamaz");
-            DEBUG_PRINT("\"realloc\" Yerine \"malloc\" Ile Yeni Bir Bellek Tahsisi Yapiniz");
+            DEBUG_PRINT_WARNING(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Bos Bir Bellek Adresi Yeniden Boyutlandirilamaz");
+            DEBUG_PRINT_ERROR(__DEBUG_MSG_MEMALLOCATION_TITLE__, "\"realloc\" Yerine \"malloc\" Ile Yeni Bir Bellek Tahsisi Yapiniz");
         #endif
         return NULL; // boş adres
     }
@@ -75,7 +74,7 @@ extern vptr mem_realloc(vptr addrptr, uintmax_s resize)
 	if (ISNULL(newPtr))
     {
         #ifdef __DEBUG_MSG_MEMALLOCATION__
-            DEBUG_PRINT("Yeniden Bellek Alanı Tahis Edilemiyor, Bellek Musait Olmayabilir");
+            DEBUG_PRINT_WARNING(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Yeniden Bellek Alanı Tahis Edilemiyor, Bellek Musait Olmayabilir");
         #endif
 		return NULL; // bellek tahsis edilemedi, boş adres
     }
@@ -88,8 +87,8 @@ extern vptr mem_realloc(vptr addrptr, uintmax_s resize)
     if(addrptr != newPtr)
     {
         #ifdef __DEBUG_MSG_MEMALLOCATION__
-            DEBUG_PRINT("Yeni Ayrilan Bellek Adresi Orijinal Degiskene Atanamadi");
-            DEBUG_PRINT("kafkasrevan@gmail.com Bu E-posta Ile Iletisime Geciniz");
+            DEBUG_PRINT_WARNING(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Yeni Ayrilan Bellek Adresi Orijinal Degiskene Atanamadi");
+            DEBUG_PRINT_MSG(__DEBUG_MSG_MEMALLOCATION_TITLE__, "kafkasrevan@gmail.com Bu E-posta Ile Iletisime Geciniz");
         #endif
 
         // yeniden boyutlandırılan adresi temizle
@@ -118,8 +117,8 @@ extern vptr mem_calloc(vptr addrptr, uintmax_s arrsize, uintmax_s varsize)
 	if (!ISNULL(addrptr))
     {
         #ifdef __DEBUG_MSG_MEMALLOCATION__
-            DEBUG_PRINT("Aktif Olarak Kullanilan Bellek Adresine Islem Yapilamaz");
-            DEBUG_PRINT("\"calloc\" Kullanimi Icin Bellek Alani Bos Olmalidir");
+            DEBUG_PRINT_ERROR(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Aktif Olarak Kullanilan Bellek Adresine Islem Yapilamaz");
+            DEBUG_PRINT_WARNING(__DEBUG_MSG_MEMALLOCATION_TITLE__, "\"calloc\" Kullanimi Icin Bellek Alani Bos Olmalidir");
         #endif
 		return NULL; // boş adres
     }
@@ -127,10 +126,12 @@ extern vptr mem_calloc(vptr addrptr, uintmax_s arrsize, uintmax_s varsize)
     // bellek alanını ayır
     addrptr = calloc(arrsize, varsize);
 
-    // bellek alanı ayrılmışsa zaten işlem başarılıdır
-	// aksi halde otomatik boş (NULL) olucaktır
+    // bellek alanı istenilen boyutta ayrılamamışsa
+    // işlem başarısız olmuştur
     #ifdef __DEBUG_MSG_MEMALLOCATION__
-        if(ISNULL(addrptr)) DEBUG_PRINT("Bellek Alani Istenilen Dizi Ve Degisken Boyutunda Olusturulamadi");
+        sizeof(addrptr) != sizeof(arrsize * varsize) ?
+            DEBUG_PRINT_WARNING(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Bellek Alani Istenilen Dizi Ve Degisken Boyutunda Olusturulamadi")
+            : DEBUG_PRINT_MSG(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Bellek Tahsisi Basarili");
     #endif
     return addrptr; // bellek adresini döndür
 }
@@ -150,7 +151,7 @@ extern vptr mem_free(vptr addrptr)
     if(ISNULL(addrptr))
     {
         #ifdef __DEBUG_MSG_MEMALLOCATION__
-            DEBUG_PRINT("Bos Bir Bellek Adresi Tekrar Bosaltilamaz");
+            DEBUG_PRINT_ERROR(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Bos Bir Bellek Adresi Tekrar Bosaltilamaz");
         #endif
         return NULL; // boş adres
     }
@@ -161,10 +162,9 @@ extern vptr mem_free(vptr addrptr)
 
     // bellek adresini boş yaptık fakat yine de kontrol ediyoruz
     #ifdef __DEBUG_MSG_MEMALLOCATION__
-        DEBUG_PRINT(ISNULL(addrptr) ?
-            "Bellek Adresi Basariyla Temizlendi" :
-            "Bellek Adresi Temizlenemedi, Adres Geri Donduruluyor"
-        );
+        ISNULL(addrptr) ?
+            DEBUG_PRINT_MSG(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Bellek Adresi Basariyla Temizlendi")
+            : DEBUG_PRINT_WARNING(__DEBUG_MSG_MEMALLOCATION_TITLE__, "Bellek Adresi Temizlenemedi, Adres Geri Donduruluyor");
     #endif
     return addrptr; // bellek adresi temizlenmişse NULL, değilse bellek adresi döner
 }

@@ -4,13 +4,13 @@
 #define DT_SHUTDOWN_H
 
 // Kütüphaneler
-#include "CompileConf.h"
 #include "OsSupport.h"
 #include "TypeDefine.h"
 
 // Zamanlayıcı Ayarlama Hata Ayıklayıcısı Belirteci
 #ifndef __COMPILE_RELEASE_MODE__
     #define __DEBUG_MSG_SHUTDOWN__
+    #define __DEBUG_MSG_SHUTDOWN_TITLE__ "SHUTDOWN"
 #endif
 
 // İşletim sistemine göre zamanlı kapatıcı desteği

@@ -4,7 +4,6 @@
 #define DT_FILESTREAM_H
 
 // Kütüphaneler
-#include "CompileConf.h"
 #include <stdio.h>
 #include "TypeDefine.h"
 #include "Macro.h"
@@ -12,6 +11,7 @@
 // Dosya İşleyicisi Hata Ayıklayıcısı Belirteci
 #ifndef __COMPILE_RELEASE_MODE__
     #define __DEBUG_MSG_FILESTREAM__
+    #define __DEBUG_MSG_FILESTREAM_TITLE__ "FILE STREAM"
 #endif
 
 // Dosya Türü Tanımlaması

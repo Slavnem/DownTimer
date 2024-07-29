@@ -4,12 +4,12 @@
 #define DT_INIT_H
 
 // Kütüphaneler
-#include "CompileConf.h"
 #include "TypeDefine.h"
 
 // Başlangıç Hata Ayıklayıcısı Belirteci
 #ifndef __COMPILE_RELEASE_MODE__
     #define __DEBUG_MSG_INIT__
+    #define __DEBUG_MSG_INIT_TITLE__ "INIT"
 #endif
 
 // DTINIT Kodları

@@ -76,7 +76,8 @@ static boolean_s isCommandFound(string_s argStr)
     else if(strcmp(argStr, __SHUTDOWN_COMM_LOCK__) == 0) return TRUE; // oturumu kilitleme
     else if(strcmp(argStr, __SHUTDOWN_COMM_CANCEL__) == 0) return TRUE; // iptal etme
 
-    return FALSE; // komut bulunamadı
+    // komut bulunamadı
+    return FALSE;
 }
 
 /* Konsol Mesaj Çıktısı
@@ -109,13 +110,13 @@ static einitcode_s static_init_console(int argc, string_s argvptr[])
     if(!isCommandFound(argvptr[1]))
     {
         #ifdef __DEBUG_MSG_INIT__
-            DEBUG_PRINT("Gecerli Islem Komutu Bulunamadi");
+            DEBUG_PRINT_ERROR(__DEBUG_MSG_INIT_TITLE__, "Gecerli Islem Komutu Bulunamadi");
         #endif
         return EINIT_ERR_CONSOLEARG; // geçersiz argüman hatası
     }
 
     #ifdef __DEBUG_MSG_INIT__
-        DEBUG_PRINT("Komut Basariyla Bulundu");
+        DEBUG_PRINT_MSG(__DEBUG_MSG_INIT_TITLE__, "Komut Basariyla Bulundu");
     #endif
 
     strCommand = argvptr[1]; // komutu depolasın
@@ -132,7 +133,7 @@ static einitcode_s static_init_console(int argc, string_s argvptr[])
             tempMinute = (!ISNULL(argvptr[2])) ? (int16_t)strtoul(argvptr[2], NULL, 0) : 0;
 
             #ifdef __DEBUG_MSG_INIT__
-                DEBUG_PRINT("Konsoldan Sadece Dakika Bilgisi Okundu");
+                DEBUG_PRINT_MSG(__DEBUG_MSG_INIT_TITLE__, "Konsoldan Sadece Dakika Bilgisi Okundu");
             #endif
         break;
         // komut, saat ve dakika
@@ -141,7 +142,7 @@ static einitcode_s static_init_console(int argc, string_s argvptr[])
             tempMinute = (!ISNULL(argvptr[3])) ? (int16_t)strtoul(argvptr[3], NULL, 0) : 0;
 
             #ifdef __DEBUG_MSG_INIT__
-                DEBUG_PRINT("Konsoldan Saat ve Dakika Bilgisi Okundu");
+                DEBUG_PRINT_MSG(__DEBUG_MSG_INIT_TITLE__, "Konsoldan Saat ve Dakika Bilgisi Okundu");
             #endif
         break;
     }
@@ -152,14 +153,14 @@ static einitcode_s static_init_console(int argc, string_s argvptr[])
         // zamanlayıcı başarıyla çalıştırıldı
         case ESH_CODE_MSG_TIMERRUNNED:
             #ifdef __DEBUG_MSG_INIT__
-                DEBUG_PRINT("Konsol Komutlari Kullanarak Zamanlayiciniz Basariyla Olusturuldu");
+                DEBUG_PRINT_MSG(__DEBUG_MSG_INIT_TITLE__, "Konsol Komutlari Kullanarak Zamanlayiciniz Basariyla Olusturuldu");
             #endif
             return EINIT_MSG_CONSOLEOK; // konsol işlemi başarılı kodu
     }
 
     // komut var ama zamanlayıcı oluşturma hatası döndür
     #ifdef __DEBUG_MSG_INIT__
-        DEBUG_PRINT("Konsole Komutlari Ile Zamanlayici Olusturulamadi");
+        DEBUG_PRINT_ERROR(__DEBUG_MSG_INIT_TITLE__, "Konsole Komutlari Ile Zamanlayici Olusturulamadi");
     #endif
     return EINIT_ERR_TIMER; // zamanlayıcı hatalı işlem kodu
 }
@@ -180,8 +181,8 @@ static einitcode_s static_init_screen(void)
 {
     // girilecek komut, saat ve dakika tutulacak
     int16_t tempCommand; // komut
-    int16_t tempHour = 0; // saat
-    int16_t tempMinute = 0; // dakika
+    int32_t tempHour = 0; // saat
+    int32_t tempMinute = 0; // dakika
     
     // komut metni
     string_a strCommand = NULL;
@@ -222,14 +223,14 @@ static einitcode_s static_init_screen(void)
         // geçersiz, sonlandırıldı
         default:
             #ifdef __DEBUG_MSG_INIT__
-                DEBUG_PRINT("Gecersiz Islem Komutu Girildi");
+                DEBUG_PRINT_ERROR(__DEBUG_MSG_INIT_TITLE__, "Gecersiz Islem Komutu Girildi");
             #endif
             return EINIT_STAT_TERMINATED; // sonlandırma komutu
     }
 
     // süreyi girmesini istemek
     printf("%s ", _strEnterTime);
-    scanf("%hd %hd", &tempHour, &tempMinute);
+    scanf("%d %d", &tempHour, &tempMinute);
 
     // zamanlayıcı ile birlikte çalıştırsın
     goto screentimer;
@@ -242,13 +243,13 @@ static einitcode_s static_init_screen(void)
             // zamanlayıcı başarıyla çalıştırıldı
             case ESH_CODE_MSG_TIMERRUNNED:
                 #ifdef __DEBUG_MSG_INIT__
-                    DEBUG_PRINT("Ekran Menusu Kullanarak Zamanlayiciniz Basariyla Olusturuldu");
+                    DEBUG_PRINT_MSG(__DEBUG_MSG_INIT_TITLE__, "Ekran Menusu Kullanarak Zamanlayiciniz Basariyla Olusturuldu");
                 #endif
                 return EINIT_MSG_SCREENOK; // ekran işlemi başarılı kodu
             // komut var ama zamanlayıcı oluşturma hatası döndür
             default:
                 #ifdef __DEBUG_MSG_INIT__
-                    DEBUG_PRINT("Ekran Menusu Ile Zamanlayici Olusturulamadi");
+                    DEBUG_PRINT_ERROR(__DEBUG_MSG_INIT_TITLE__, "Ekran Menusu Ile Zamanlayici Olusturulamadi");
                 #endif
                 return EINIT_ERR_TIMER; // zamanlayıcı hatalı işlem kodu
         }
