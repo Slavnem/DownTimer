@@ -33,12 +33,10 @@
 #ifdef __x86_64__
     #define __OS_ARCH_NAME__ "Linux x64" // 64 Bit
     #define __OS_ARCH_x64__ // İşletim Sistemi 32 Bit Mimarisi
-    #define __INTMAX_FORMAT__ "%lu" /* en büyük int sayı printf desteği */
 // Linux x86
 #elif defined __i386__
     #define __OS_ARCH_NAME__ "Linux x86" // 32 Bit
     #define __OS_ARCH_x86__ // İşletim Sistemi 64 Bit Mimarisi
-    #define __INTMAX_FORMAT__ "%llu" /* en büyük int sayı printf desteği */
 #endif
 
 // Masaüstünü Alan Fonksiyonlar Prototip

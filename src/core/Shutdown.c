@@ -23,13 +23,7 @@
 static intmax_s static_shutdown_timer_calculate(intmax_s time)
 {
     // Eğer geçersiz süre ise 0 dönsün
-    if(time < 1)
-    {
-        #ifdef __DEBUG_MSG_SHUTDOWN__
-            DEBUG_PRINT_ERROR(__DEBUG_MSG_SHUTDOWN_TITLE__, "Gecersiz Sure");
-        #endif
-        return 0;
-    }
+    if(time < 1) return 0;
 
     // Linux için
     #ifdef __linux__
@@ -116,25 +110,28 @@ static eshcode_s static_shutdown_timer(string_s command, intmax_s time, boolean 
     #ifdef __DEBUG_MSG_SHUTDOWN__
         DEBUG_PRINT_MSG(__DEBUG_MSG_SHUTDOWN_TITLE__, "Zamanlayici Icin Girdiginiz Degerler Gecerli");
     #endif
+    
+    // hesaplanmış zaman
+    uintmax_s calcTimer = static_shutdown_timer_calculate(time);
 
     // geçici olarak kapatma komutu tutucu
-    char buffer[256];
+    char sysCommand[128];
 
     // sistemi kapat
     if(strcmp(command, __SHUTDOWN_COMM_OFF__) == 0)
-        snprintf(buffer, SAFESIZESTR(buffer), "%s " __INTMAX_FORMAT__, __SHUTDOWN_OFF__, static_shutdown_timer_calculate(time));
+        snprintf(sysCommand, SAFESIZESTR(sysCommand), "%s %lu", __SHUTDOWN_OFF__, calcTimer);
     // yeniden başlat
     else if(strcmp(command, __SHUTDOWN_COMM_RESTART__) == 0)
-        snprintf(buffer, SAFESIZESTR(buffer), "%s " __INTMAX_FORMAT__, __SHUTDOWN_RESTART__, static_shutdown_timer_calculate(time));
+        snprintf(sysCommand, SAFESIZESTR(sysCommand), "%s %lu", __SHUTDOWN_RESTART__, calcTimer);
     // uyku
     else if(strcmp(command, __SHUTDOWN_COMM_SLEEP__) == 0)
-        snprintf(buffer, SAFESIZESTR(buffer), "%s", __SHUTDOWN_SLEEP__);
+        snprintf(sysCommand, SAFESIZESTR(sysCommand), "%s", __SHUTDOWN_SLEEP__);
     // kilitle
     else if(strcmp(command, __SHUTDOWN_COMM_LOCK__) == 0)
-        snprintf(buffer, SAFESIZESTR(buffer), "%s", __SHUTDOWN_LOCK__);
+        snprintf(sysCommand, SAFESIZESTR(sysCommand), "%s", __SHUTDOWN_LOCK__);
     // iptal et
     else if(strcmp(command, __SHUTDOWN_COMM_CANCEL__) == 0)
-        snprintf(buffer, SAFESIZESTR(buffer), "%s", __SHUTDOWN_CANCEL__);
+        snprintf(sysCommand, SAFESIZESTR(sysCommand), "%s", __SHUTDOWN_CANCEL__);
     else
     {
         #ifdef __DEBUG_MSG_SHUTDOWN__
@@ -145,10 +142,11 @@ static eshcode_s static_shutdown_timer(string_s command, intmax_s time, boolean 
 
     #ifdef __DEBUG_MSG_SHUTDOWN__
         DEBUG_PRINT_MSG(__DEBUG_MSG_SHUTDOWN_TITLE__, "Gecerli Komut Algilandi");
+        DEBUG_PRINT_MSG(__DEBUG_MSG_SHUTDOWN_TITLE__, sysCommand);
     #endif
 
     // komutu çalıştırsın ve tutsun
-    const boolean resultCommand = shudown_execute(buffer);
+    const boolean resultCommand = shudown_execute(sysCommand);
 
     // dosyaya veri kaydetmek için dosya yapısı işaretçisi
     MyFile logFile = {
@@ -167,9 +165,9 @@ static eshcode_s static_shutdown_timer(string_s command, intmax_s time, boolean 
             : DEBUG_PRINT_MSG(__DEBUG_MSG_SHUTDOWN_TITLE__, "Dosya Basariyla Acildi");
     #endif
 
-    // dosya açma başarısız ise direk kod dönsün
-    if(file_status(&logFile) == EFS_CODE_STAT_FREE)
-        return ESH_CODE_MSG_TIMERRUNNED; // zamanlayıcı çalıştırıldı
+    // dosya açma başarısız veya çalıştırılma başarılı ise direk kod dönsün
+    if(file_status(&logFile) == EFS_CODE_STAT_FREE && resultCommand) return ESH_CODE_MSG_TIMERRUNNED; // zamanlayıcı çalıştırıldı
+    else if(!resultCommand) return ESH_CODE_ERR_COMMRUNFAIL; // zamanlayıcı çalışamadı
 
     // metini tutacak geçici değişken
     char tempText[512];
