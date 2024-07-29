@@ -1,11 +1,5 @@
 <!-- Başlık -->
-# 🚀 Down Timer
-
-<!-- Son Sürüm Kodu -->
-## Version v1.2
-
-<!-- C Standartı -->
-## C11 Standard
+# 🚀 Down Timer v1.2
 
 <!-- İşletim Sistemleri ve Derleme -->
 <pre>
@@ -13,8 +7,8 @@ Linux -> GCC
     Linux x86 Debug Msg: gcc -m32 src/main.c src/core/*.c -o build/linux/DownTimerLx86_Debug
     Linux x64 Debug Msg: gcc -m64 src/main.c src/core/*.c -o build/linux/DownTimerLx64_Debug
 
-    Linux x86 Release: gcc -m32 src/main.c src/core/*.c -o build/linux/DownTimerLx86_Release -D __COMPILE_RELEASE_MODE__
-    Linux x64 Release: gcc -m64 src/main.c src/core/*.c -o build/linux/DownTimerLx64_Release -D __COMPILE_RELEASE_MODE__
+    Linux x86 Release: gcc -m32 src/main.c src/core/*.c -o build/linux/DownTimerLx86 -D __COMPILE_RELEASE_MODE__
+    Linux x64 Release: gcc -m64 src/main.c src/core/*.c -o build/linux/DownTimerLx64 -D __COMPILE_RELEASE_MODE__
 </pre>
 
 <!-- Bilgilendirme -->
@@ -32,11 +26,11 @@ operations may not be saved in the file
 
 <!-- Komutlar -->
 <pre>
-Kapat | Off: -of "sudo?"
-Yeniden Başlat | Restart: -re "sudo?"
-Uyku | Sleep: -sl "sudo?"
-Kilitle | Lock: -lo "not sudo" "xdg-screensaver install"
-İptal Et | Cancel: -ca "sudo?"
+"sudo?" -> Kapat | Off: -of ? ? (saat ve dakika ya da sadece dakika | hour and minute or only minute)
+"sudo?" -> Yeniden Başlat | Restart: -re ? ? (saat ve dakika ya da sadece dakika | hour and minute or only minute)
+"sudo?" -> Uyku | Sleep: -sl
+"not sudo" "xdg-screensaver install" -> Kilitle | Lock: -lo
+"sudo?" İptal Et | Cancel: -ca
 </pre>
 
 ## Linux Masaüstü Destek | Linux Desktop Support
